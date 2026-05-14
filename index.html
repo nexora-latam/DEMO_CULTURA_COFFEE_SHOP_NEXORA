@@ -90,6 +90,10 @@
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby8BS-pYso1UmepeZK7sL-U2FrdACk6aDYBjvF1lDUI1TSN0iLxhNSYjpomLzvwr4vl/exec';
+        if (result.success) {
+    // Login exitoso -> Redireccionar al dashboard
+    window.location.href = 'dashboard_demo_cultura_coffee_shop.html';
+}
 
         const loginForm = document.getElementById('loginForm');
         const usernameInput = document.getElementById('username');
