@@ -269,6 +269,96 @@
       font-size: 13px;
     }
 
+    /* ── MOBILE CARDS (ocultas en desktop) ── */
+    .mobile-list { display: none; flex-direction: column; gap: 10px; }
+    .mobile-card {
+      background: var(--bg-primary);
+      border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+    }
+    .mobile-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+    .mobile-card-name { font-size: 15px; font-weight: 500; flex: 1; }
+    .mobile-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .mobile-card-stock {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .mobile-card-stock .stock-bar-bg { flex: 1; }
+    .mobile-card-nums {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .mobile-card-nums span strong {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .mobile-card-actions {
+      display: flex;
+      gap: 8px;
+      border-top: 0.5px solid var(--border-light);
+      padding-top: 10px;
+      margin-top: 2px;
+    }
+    .mobile-action-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 7px;
+      border-radius: var(--radius-md);
+      border: 0.5px solid var(--border-mid);
+      background: transparent;
+      font-family: inherit;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .mobile-action-btn:hover { background: var(--bg-secondary); }
+    .mobile-action-btn.danger { color: var(--red-dark); border-color: #F0959580; }
+    .mobile-action-btn.danger:hover { background: var(--red-bg); }
+
+    /* ── RESPONSIVE BREAKPOINTS ── */
+    @media (max-width: 700px) {
+      body { padding: 1rem 0.75rem; }
+      .app-title { font-size: 16px; }
+      .date-label { display: none; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .stat-value { font-size: 20px; }
+      .toolbar { gap: 6px; }
+      .search-wrap { max-width: 100%; min-width: 0; flex: 1 1 100%; order: -1; }
+      .filters-row { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; width: 100%; padding-bottom: 2px; }
+      .filters-row::-webkit-scrollbar { display: none; }
+      .add-btn { width: 100%; justify-content: center; margin-left: 0; }
+      /* tabla → ocultar, mostrar cards */
+      .table-wrap { display: none; }
+      .mobile-list { display: flex; }
+    }
+
+    @media (max-width: 400px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .modal { margin: 0.5rem; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+
     /* Modal */
     .modal-overlay {
       display: none;
@@ -401,11 +491,13 @@
       <i class="ti ti-search" aria-hidden="true"></i>
       <input type="text" id="search-input" placeholder="Buscar producto…" oninput="renderTable()" />
     </div>
-    <button class="filter-btn active" data-cat="Todos"     onclick="setFilter(this)">Todos</button>
-    <button class="filter-btn"        data-cat="Bebidas"   onclick="setFilter(this)"><i class="ti ti-droplet" aria-hidden="true"></i> Bebidas</button>
-    <button class="filter-btn"        data-cat="Alimentos" onclick="setFilter(this)"><i class="ti ti-bread" aria-hidden="true"></i> Alimentos</button>
-    <button class="filter-btn"        data-cat="Insumos"   onclick="setFilter(this)"><i class="ti ti-box" aria-hidden="true"></i> Insumos</button>
-    <button class="filter-btn"        data-cat="Limpieza"  onclick="setFilter(this)"><i class="ti ti-sparkles" aria-hidden="true"></i> Limpieza</button>
+    <div class="filters-row">
+      <button class="filter-btn active" data-cat="Todos"     onclick="setFilter(this)">Todos</button>
+      <button class="filter-btn"        data-cat="Bebidas"   onclick="setFilter(this)"><i class="ti ti-droplet" aria-hidden="true"></i> Bebidas</button>
+      <button class="filter-btn"        data-cat="Alimentos" onclick="setFilter(this)"><i class="ti ti-bread" aria-hidden="true"></i> Alimentos</button>
+      <button class="filter-btn"        data-cat="Insumos"   onclick="setFilter(this)"><i class="ti ti-box" aria-hidden="true"></i> Insumos</button>
+      <button class="filter-btn"        data-cat="Limpieza"  onclick="setFilter(this)"><i class="ti ti-sparkles" aria-hidden="true"></i> Limpieza</button>
+    </div>
     <button class="add-btn" onclick="openModal()"><i class="ti ti-plus" aria-hidden="true"></i> Agregar producto</button>
   </div>
 
@@ -426,6 +518,9 @@
       <tbody id="table-body"></tbody>
     </table>
   </div>
+
+  <!-- Vista móvil: cards -->
+  <div class="mobile-list" id="mobile-list"></div>
 
 </div>
 
@@ -535,10 +630,13 @@
       });
 
     const tbody = document.getElementById('table-body');
+    const mlist = document.getElementById('mobile-list');
 
     if (filtered.length === 0) {
       tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No se encontraron productos.</td></tr>';
+      mlist.innerHTML = '<p style="text-align:center;color:var(--text-secondary);font-size:13px;padding:2rem 0;">No se encontraron productos.</p>';
     } else {
+      // Tabla desktop
       tbody.innerHTML = filtered.map(({ item, idx }) => {
         const st  = getStatus(item);
         const pct = getPct(item);
@@ -559,6 +657,35 @@
             <button class="action-btn danger" title="Eliminar" onclick="deleteItem(${idx})"><i class="ti ti-trash" aria-hidden="true"></i></button>
           </td>
         </tr>`;
+      }).join('');
+
+      // Cards móvil
+      mlist.innerHTML = filtered.map(({ item, idx }) => {
+        const st  = getStatus(item);
+        const pct = getPct(item);
+        return `<div class="mobile-card">
+          <div class="mobile-card-top">
+            <div class="mobile-card-name">${item.nombre}</div>
+            <span class="badge ${badgeClass[st]}">${statusLabel[st]}</span>
+          </div>
+          <div class="mobile-card-meta">
+            <span class="cat-pill ${catClass[item.cat]}">${item.cat}</span>
+          </div>
+          <div class="mobile-card-stock">
+            <div class="stock-bar-bg" style="flex:1;height:5px;border-radius:99px;background:var(--bg-tertiary);overflow:hidden;">
+              <div class="stock-bar-fill ${fillClass[st]}" style="width:${pct}%;height:100%;border-radius:99px;"></div>
+            </div>
+            <span class="stock-num">${item.stock} ${item.unit}</span>
+          </div>
+          <div class="mobile-card-nums">
+            <span>Stock actual: <strong>${item.stock} ${item.unit}</strong></span>
+            <span>Mínimo: <strong>${item.min} ${item.unit}</strong></span>
+          </div>
+          <div class="mobile-card-actions">
+            <button class="mobile-action-btn" onclick="openEdit(${idx})"><i class="ti ti-edit" aria-hidden="true"></i> Editar</button>
+            <button class="mobile-action-btn danger" onclick="deleteItem(${idx})"><i class="ti ti-trash" aria-hidden="true"></i> Eliminar</button>
+          </div>
+        </div>`;
       }).join('');
     }
 
