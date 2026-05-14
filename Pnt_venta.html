@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Punto de Venta — Cafetería</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    :root {
+      --bg:        #0f0f0e;
+      --bg2:       #1a1a18;
+      --bg3:       #242422;
+      --bg4:       #2e2e2b;
+      --border:    rgba(255,255,255,0.08);
+      --border2:   rgba(255,255,255,0.13);
+      --text:      #f0ede8;
+      --muted:     #8a8880;
+      --accent:    #c9f261;
+      --accent2:   #a8d43e;
+      --accent-bg: rgba(201,242,97,0.1);
+      --red:       #ff6b6b;
+      --red-bg:    rgba(255,107,107,0.1);
+      --amber:     #f0a84a;
+      --amber-bg:  rgba(240,168,74,0.1);
+      --teal:      #4ecdc4;
+      --teal-bg:   rgba(78,205,196,0.1);
+      --radius:    10px;
+      --radius-lg: 14px;
+      --mono:      'DM Mono', monospace;
+    }
+ 
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+ 
+    /* ── TOP NAV ── */
+    .topnav {
+      display: flex;
+      align-items: center;
+      padding: 0 1.5rem;
+      height: 56px;
+      border-bottom: 0.5px solid var(--border);
+      background: var(--bg2);
+      gap: 0;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      margin-right: 2rem;
+    }
+    .nav-logo {
+      width: 32px; height: 32px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      color: #1a1a18;
+    }
+    .nav-brand-name { font-size: 15px; font-weight: 500; color: var(--text); }
+ 
+    .nav-tabs { display: flex; gap: 2px; flex: 1; }
+    .nav-tab {
+      display: flex; align-items: center; gap: 7px;
+      padding: 6px 14px;
+      border-radius: var(--radius);
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .nav-tab:hover { background: var(--bg3); color: var(--text); }
+    .nav-tab.active { background: var(--bg3); color: var(--accent); }
+    .nav-tab .tab-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: none;
+    }
+    .nav-tab.active .tab-dot { display: block; }
+ 
+    .nav-right {
+      display: flex; align-items: center; gap: 10px;
+      margin-left: auto;
+    }
+    .nav-user {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: var(--muted);
+    }
+    .nav-avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: var(--bg4);
+      border: 0.5px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 500; color: var(--text);
+    }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px; font-weight: 500;
+    }
+    .pill-open   { background: var(--accent-bg); color: var(--accent); }
+    .pill-closed { background: var(--bg4); color: var(--muted); }
+    .pill-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+ 
+    /* ── PAGES ── */
+    .page { display: none; padding: 2rem 1.5rem; max-width: 1100px; margin: 0 auto; width: 100%; }
+    .page.active { display: block; }
+ 
+    .page-header { margin-bottom: 1.75rem; }
+    .page-title { font-size: 22px; font-weight: 500; color: var(--text); }
+    .page-sub   { font-size: 13px; color: var(--muted); margin-top: 4px; }
+ 
+    /* ── CARDS ── */
+    .card {
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+    }
+    .card-title {
+      font-size: 13px; font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 1rem;
+    }
+ 
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+    }
+    .stat-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .stat-val   { font-size: 26px; font-weight: 500; font-family: var(--mono); }
+    .stat-val.green { color: var(--accent); }
+    .stat-val.amber { color: var(--amber); }
+    .stat-val.red   { color: var(--red); }
+    .stat-val.teal  { color: var(--teal); }
+ 
+    /* ── FORMS ── */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 12px; color: var(--muted); }
+    input, select, textarea {
+      background: var(--bg3);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 9px 12px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+    input::placeholder { color: var(--muted); }
+    select option { background: var(--bg3); }
+    textarea { resize: vertical; min-height: 80px; }
+ 
+    .input-prefix {
+      position: relative;
+    }
+    .input-prefix span {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 14px;
+      font-family: var(--mono);
+      pointer-events: none;
+    }
+    .input-prefix input { padding-left: 28px; font-family: var(--mono); }
+ 
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 18px;
+      border-radius: var(--radius);
+      border: none;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-primary { background: var(--accent); color: #1a1a18; }
+    .btn-primary:hover { background: var(--accent2); }
+    .btn-ghost {
+      background: transparent;
+      border: 0.5px solid var(--border2);
+      color: var(--muted);
+    }
+    .btn-ghost:hover { background: var(--bg3); color: var(--text); }
+    .btn-danger { background: var(--red-bg); color: var(--red); border: 0.5px solid rgba(255,107,107,0.2); }
+    .btn-danger:hover { background: rgba(255,107,107,0.18); }
+    .btn-success { background: var(--accent-bg); color: var(--accent); border: 0.5px solid rgba(201,242,97,0.2); }
+    .btn-success:hover { background: rgba(201,242,97,0.18); }
+    .btn-lg { padding: 12px 28px; font-size: 15px; }
+    .btn-full { width: 100%; justify-content: center; }
+ 
+    .btn-row { display: flex; gap: 10px; margin-top: 1.5rem; flex-wrap: wrap; }
+ 
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 0.5px solid var(--border); margin: 1.5rem 0; }
+ 
+    /* ── BADGE ── */
+    .badge {
+      display: inline-flex; align-items: center;
+      padding: 3px 9px; border-radius: 99px;
+      font-size: 11px; font-weight: 500;
+    }
+    .badge-green  { background: var(--accent-bg);  color: var(--accent); }
+    .badge-amber  { background: var(--amber-bg);   color: var(--amber); }
+    .badge-red    { background: var(--red-bg);      color: var(--red); }
+    .badge-teal   { background: var(--teal-bg);     color: var(--teal); }
+    .badge-muted  { background: var(--bg4);         color: var(--muted); }
+ 
+    /* ── TABLE ── */
+    .table-wrap {
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { background: var(--bg3); }
+    thead th {
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--muted);
+      border-bottom: 0.5px solid var(--border);
+    }
+    tbody tr { border-bottom: 0.5px solid var(--border); transition: background 0.1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--bg3); }
+    tbody td { padding: 11px 14px; color: var(--text); }
+    td.mono { font-family: var(--mono); }
+ 
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+ 
+    /* ── ASIGNACION PAGE ── */
+    .cajas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: 1.75rem;
+    }
+    .caja-card {
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.1rem 1.25rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+    }
+    .caja-card:hover { border-color: var(--border2); background: var(--bg3); }
+    .caja-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+    }
+    .caja-card.occupied {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .caja-card-top {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .caja-icon {
+      width: 36px; height: 36px;
+      background: var(--bg4);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: var(--muted);
+    }
+    .caja-card.selected .caja-icon { background: var(--accent); color: #1a1a18; }
+    .caja-num  { font-size: 16px; font-weight: 500; margin-bottom: 3px; }
+    .caja-loc  { font-size: 12px; color: var(--muted); }
+    .check-icon {
+      position: absolute; top: 10px; right: 10px;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: none;
+      align-items: center; justify-content: center;
+      font-size: 12px; color: #1a1a18;
+    }
+    .caja-card.selected .check-icon { display: flex; }
+ 
+    .assign-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+ 
+    /* ── APERTURA PAGE ── */
+    .apertura-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 1.5rem;
+    }
+    .denom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 1rem;
+    }
+    .denom-row {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--bg3);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 10px;
+    }
+    .denom-label {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--muted);
+      min-width: 52px;
+    }
+    .denom-row input {
+      background: transparent;
+      border: none;
+      border-bottom: 0.5px solid var(--border2);
+      border-radius: 0;
+      padding: 2px 0;
+      font-size: 14px;
+      font-family: var(--mono);
+      width: 48px;
+      text-align: center;
+    }
+    .denom-row input:focus { border-bottom-color: var(--accent); }
+    .denom-subtotal {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+      min-width: 60px;
+      text-align: right;
+    }
+ 
+    .resumen-card {
+      background: var(--bg3);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .resumen-row {
+      display: flex; justify-content: space-between;
+      padding: 5px 0;
+      font-size: 13px;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .resumen-row:last-child { border-bottom: none; }
+    .resumen-row .label { color: var(--muted); }
+    .resumen-row .val   { font-family: var(--mono); color: var(--text); }
+    .resumen-total {
+      display: flex; justify-content: space-between;
+      padding: 10px 0 0;
+      font-size: 16px; font-weight: 500;
+    }
+    .resumen-total .val { font-family: var(--mono); color: var(--accent); }
+ 
+    /* ── CIERRE PAGE ── */
+    .cierre-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 1.5rem;
+    }
+    .cierre-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+    .cierre-stat {
+      background: var(--bg3);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.9rem 1rem;
+    }
+    .diff-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+    .diff-ok  { background: var(--accent-bg); }
+    .diff-low { background: var(--amber-bg); }
+    .diff-bad { background: var(--red-bg); }
+ 
+    /* ── TIMELINE ── */
+    .timeline { display: flex; flex-direction: column; gap: 0; }
+    .tl-item {
+      display: flex; gap: 14px;
+      padding-bottom: 18px;
+      position: relative;
+    }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-left { display: flex; flex-direction: column; align-items: center; width: 28px; }
+    .tl-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--bg4);
+      border: 2px solid var(--border2);
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+    .tl-dot.done { background: var(--accent); border-color: var(--accent); }
+    .tl-line {
+      flex: 1; width: 1px;
+      background: var(--border);
+      margin-top: 4px;
+    }
+    .tl-item:last-child .tl-line { display: none; }
+    .tl-content { flex: 1; }
+    .tl-title { font-size: 13px; font-weight: 500; color: var(--text); }
+    .tl-time  { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: var(--mono); }
+    .tl-desc  { font-size: 12px; color: var(--muted); margin-top: 4px; }
+ 
+    /* ── ALERT BOX ── */
+    .alert {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      margin-bottom: 1rem;
+    }
+    .alert-success { background: var(--accent-bg); color: var(--accent); border: 0.5px solid rgba(201,242,97,0.2); }
+    .alert-warning { background: var(--amber-bg);  color: var(--amber);  border: 0.5px solid rgba(240,168,74,0.2); }
+    .alert-danger  { background: var(--red-bg);    color: var(--red);    border: 0.5px solid rgba(255,107,107,0.2); }
+ 
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--bg2);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      width: 100%; max-width: 460px;
+      margin: 1rem;
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .modal-title { font-size: 17px; font-weight: 500; }
+    .modal-close {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: 18px; padding: 4px;
+      border-radius: var(--radius); transition: color 0.1s;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.5rem; }
+ 
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      background: var(--bg3); border: 0.5px solid var(--border2);
+      color: var(--text); padding: 10px 16px;
+      border-radius: var(--radius); font-size: 13px;
+      opacity: 0; transform: translateY(8px);
+      transition: all 0.2s; z-index: 300; pointer-events: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+ 
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .topnav { padding: 0 1rem; overflow-x: auto; gap: 0; }
+      .nav-brand-name { display: none; }
+      .nav-tab span.tab-label { display: none; }
+      .page { padding: 1.25rem 1rem; }
+      .assign-panel    { grid-template-columns: 1fr; }
+      .apertura-layout { grid-template-columns: 1fr; }
+      .cierre-layout   { grid-template-columns: 1fr; }
+      .form-grid       { grid-template-columns: 1fr; }
+      .form-grid.cols3 { grid-template-columns: 1fr 1fr; }
+      .stats-row       { grid-template-columns: repeat(2, 1fr); }
+      .denom-grid      { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .cajas-grid { grid-template-columns: 1fr 1fr; }
+      .cierre-stat-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+ 
+<!-- ── TOP NAV ── -->
+<nav class="topnav">
+  <div class="nav-brand">
+    <div class="nav-logo"><i class="ti ti-coffee" aria-hidden="true"></i></div>
+    <span class="nav-brand-name">CaféPOS</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-page="asignacion" onclick="goTo('asignacion', this)">
+      <div class="tab-dot"></div>
+      <i class="ti ti-layout-grid" aria-hidden="true"></i>
+      <span class="tab-label">Asignación de caja</span>
+    </button>
+    <button class="nav-tab" data-page="apertura" onclick="goTo('apertura', this)">
+      <div class="tab-dot"></div>
+      <i class="ti ti-lock-open" aria-hidden="true"></i>
+      <span class="tab-label">Apertura de caja</span>
+    </button>
+    <button class="nav-tab" data-page="cierre" onclick="goTo('cierre', this)">
+      <div class="tab-dot"></div>
+      <i class="ti ti-lock" aria-hidden="true"></i>
+      <span class="tab-label">Cierre de caja</span>
+    </button>
+  </div>
+  <div class="nav-right">
+    <span class="status-pill pill-open" id="nav-status">
+      <span class="pill-dot"></span> Caja abierta
+    </span>
+    <div class="nav-user">
+      <div class="nav-avatar">JM</div>
+      <span style="display:none;" id="nav-username">Juan M.</span>
+    </div>
+  </div>
+</nav>
+ 
+<!-- ══════════════════════════════════════
+     PAGE 1 — ASIGNACIÓN DE CAJA
+══════════════════════════════════════ -->
+<div class="page active" id="page-asignacion">
+  <div class="page-header">
+    <div class="page-title">Asignación de caja</div>
+    <div class="page-sub">Selecciona una caja disponible y asígnala a un cajero</div>
+  </div>
+ 
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Cajas totales</div>
+      <div class="stat-val teal">5</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Disponibles</div>
+      <div class="stat-val green">3</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Ocupadas</div>
+      <div class="stat-val amber">2</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Fuera de servicio</div>
+      <div class="stat-val red">0</div>
+    </div>
+  </div>
+ 
+  <div class="section-label">Selecciona una caja</div>
+  <div class="cajas-grid" id="cajas-grid">
+    <!-- Generado por JS -->
+  </div>
+ 
+  <div class="assign-panel">
+    <div class="card">
+      <div class="card-title">Datos del cajero</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Cajero asignado</label>
+          <select id="a-cajero">
+            <option value="">— Seleccionar —</option>
+            <option>Juan Martínez</option>
+            <option>María López</option>
+            <option>Carlos Pérez</option>
+            <option>Ana Rodríguez</option>
+            <option>Luis Gómez</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Turno</label>
+          <select id="a-turno">
+            <option>Matutino (6:00 – 14:00)</option>
+            <option>Vespertino (14:00 – 22:00)</option>
+            <option>Nocturno (22:00 – 6:00)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Fecha de asignación</label>
+          <input type="date" id="a-fecha" />
+        </div>
+        <div class="form-group">
+          <label>Hora de inicio</label>
+          <input type="time" id="a-hora" />
+        </div>
+        <div class="form-group full">
+          <label>Notas (opcional)</label>
+          <textarea id="a-notas" placeholder="Instrucciones especiales o notas del turno…"></textarea>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="asignarCaja()">
+          <i class="ti ti-check" aria-hidden="true"></i> Confirmar asignación
+        </button>
+        <button class="btn btn-ghost" onclick="limpiarAsignacion()">Limpiar</button>
+      </div>
+    </div>
+ 
+    <div class="card">
+      <div class="card-title">Asignaciones activas</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Caja</th>
+              <th>Cajero</th>
+              <th>Turno</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="asignaciones-tbody">
+            <tr>
+              <td class="mono">Caja 01</td>
+              <td>María López</td>
+              <td>Matutino</td>
+              <td><span class="badge badge-green">Activa</span></td>
+            </tr>
+            <tr>
+              <td class="mono">Caja 03</td>
+              <td>Carlos Pérez</td>
+              <td>Vespertino</td>
+              <td><span class="badge badge-amber">Pendiente</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ══════════════════════════════════════
+     PAGE 2 — APERTURA DE CAJA
+══════════════════════════════════════ -->
+<div class="page" id="page-apertura">
+  <div class="page-header">
+    <div class="page-title">Apertura de caja</div>
+    <div class="page-sub">Registra el fondo inicial y abre el turno</div>
+  </div>
+ 
+  <div class="apertura-layout">
+    <!-- Izquierda -->
+    <div>
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div class="card-title">Información del turno</div>
+        <div class="form-grid cols3">
+          <div class="form-group">
+            <label>Caja asignada</label>
+            <select id="ap-caja">
+              <option>Caja 02</option>
+              <option>Caja 04</option>
+              <option>Caja 05</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Cajero</label>
+            <input type="text" value="Juan Martínez" id="ap-cajero" />
+          </div>
+          <div class="form-group">
+            <label>Turno</label>
+            <select id="ap-turno">
+              <option>Matutino</option>
+              <option>Vespertino</option>
+              <option>Nocturno</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fecha apertura</label>
+            <input type="date" id="ap-fecha" />
+          </div>
+          <div class="form-group">
+            <label>Hora apertura</label>
+            <input type="time" id="ap-hora" />
+          </div>
+          <div class="form-group">
+            <label>Supervisor</label>
+            <select id="ap-supervisor">
+              <option>— Ninguno —</option>
+              <option>Gerente General</option>
+              <option>Supervisor Turno</option>
+            </select>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="card">
+        <div class="card-title">Conteo de fondo inicial</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:1rem;">Ingresa la cantidad de billetes y monedas para calcular el fondo inicial</p>
+ 
+        <div style="margin-bottom:0.75rem;">
+          <div class="section-label">Billetes</div>
+          <div class="denom-grid" id="billetes-grid"></div>
+        </div>
+ 
+        <hr class="divider" style="margin:1rem 0;" />
+ 
+        <div>
+          <div class="section-label">Monedas</div>
+          <div class="denom-grid" id="monedas-grid"></div>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Derecha: resumen -->
+    <div>
+      <div class="card" style="position:sticky;top:72px;">
+        <div class="card-title">Resumen apertura</div>
+ 
+        <div class="resumen-card">
+          <div class="resumen-row"><span class="label">Caja</span><span class="val mono" id="res-caja">Caja 02</span></div>
+          <div class="resumen-row"><span class="label">Cajero</span><span class="val" id="res-cajero">Juan Martínez</span></div>
+          <div class="resumen-row"><span class="label">Turno</span><span class="val" id="res-turno">Matutino</span></div>
+          <div class="resumen-row"><span class="label">Fecha</span><span class="val mono" id="res-fecha">—</span></div>
+          <div class="resumen-row"><span class="label">Hora</span><span class="val mono" id="res-hora">—</span></div>
+        </div>
+ 
+        <div class="section-label">Desglose fondo</div>
+        <div class="resumen-card" id="desglose-wrap">
+          <div style="font-size:12px;color:var(--muted);text-align:center;padding:0.5rem 0;">Ingresa las denominaciones</div>
+        </div>
+ 
+        <div class="resumen-total">
+          <span>Total fondo inicial</span>
+          <span class="val" id="total-fondo">Q 0.00</span>
+        </div>
+ 
+        <hr class="divider" />
+ 
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label>Observaciones de apertura</label>
+          <textarea id="ap-obs" placeholder="Estado de la caja, incidencias previas…" style="min-height:60px;"></textarea>
+        </div>
+ 
+        <button class="btn btn-primary btn-lg btn-full" onclick="abrirCaja()">
+          <i class="ti ti-lock-open" aria-hidden="true"></i> Abrir caja
+        </button>
+        <button class="btn btn-ghost btn-full" style="margin-top:8px;" onclick="imprimirApertura()">
+          <i class="ti ti-printer" aria-hidden="true"></i> Imprimir comprobante
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ══════════════════════════════════════
+     PAGE 3 — CIERRE DE CAJA
+══════════════════════════════════════ -->
+<div class="page" id="page-cierre">
+  <div class="page-header">
+    <div class="page-title">Cierre de caja</div>
+    <div class="page-sub">Verifica el arqueo y cierra el turno activo</div>
+  </div>
+ 
+  <div class="cierre-layout">
+    <!-- Izquierda -->
+    <div>
+      <div class="cierre-stat-grid">
+        <div class="cierre-stat">
+          <div class="stat-label">Ventas del turno</div>
+          <div class="stat-val green" style="font-size:22px;">Q 4,287.50</div>
+        </div>
+        <div class="cierre-stat">
+          <div class="stat-label">Transacciones</div>
+          <div class="stat-val teal" style="font-size:22px;">147</div>
+        </div>
+        <div class="cierre-stat">
+          <div class="stat-label">Fondo inicial</div>
+          <div class="stat-val" style="font-size:22px;">Q 500.00</div>
+        </div>
+        <div class="cierre-stat">
+          <div class="stat-label">Total esperado</div>
+          <div class="stat-val amber" style="font-size:22px;">Q 4,787.50</div>
+        </div>
+      </div>
+ 
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div class="card-title">Conteo final — arqueo</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:1rem;">Cuenta físicamente el dinero en caja y registra las cantidades</p>
+        <div class="denom-grid" id="cierre-billetes-grid"></div>
+        <hr class="divider" style="margin:1rem 0;" />
+        <div class="denom-grid" id="cierre-monedas-grid"></div>
+ 
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:1.25rem;padding:12px 14px;background:var(--bg3);border-radius:var(--radius);">
+          <span style="font-size:14px;font-weight:500;">Total contado</span>
+          <span style="font-family:var(--mono);font-size:18px;font-weight:500;color:var(--accent);" id="total-contado">Q 0.00</span>
+        </div>
+      </div>
+ 
+      <div class="card">
+        <div class="card-title">Desglose por forma de pago</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Forma de pago</th><th>Transacciones</th><th>Monto sistema</th><th>Monto físico</th><th>Diferencia</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Efectivo</td><td class="mono">98</td>
+                <td class="mono">Q 2,940.00</td>
+                <td><div class="input-prefix" style="max-width:110px;"><span>Q</span><input type="number" value="2940.00" oninput="recalcDiff(this)" /></div></td>
+                <td class="mono" id="diff-efectivo"><span class="badge badge-green">Q 0.00</span></td>
+              </tr>
+              <tr>
+                <td>Tarjeta</td><td class="mono">42</td>
+                <td class="mono">Q 1,095.50</td>
+                <td><div class="input-prefix" style="max-width:110px;"><span>Q</span><input type="number" value="1095.50" oninput="recalcDiff(this)" /></div></td>
+                <td class="mono" id="diff-tarjeta"><span class="badge badge-green">Q 0.00</span></td>
+              </tr>
+              <tr>
+                <td>Transferencia</td><td class="mono">7</td>
+                <td class="mono">Q 252.00</td>
+                <td><div class="input-prefix" style="max-width:110px;"><span>Q</span><input type="number" value="252.00" oninput="recalcDiff(this)" /></div></td>
+                <td class="mono" id="diff-transf"><span class="badge badge-green">Q 0.00</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Derecha: resumen cierre -->
+    <div>
+      <div class="card" style="position:sticky;top:72px;">
+        <div class="card-title">Resumen de cierre</div>
+ 
+        <div class="resumen-card">
+          <div class="resumen-row"><span class="label">Caja</span><span class="val mono">Caja 02</span></div>
+          <div class="resumen-row"><span class="label">Cajero</span><span class="val">Juan Martínez</span></div>
+          <div class="resumen-row"><span class="label">Apertura</span><span class="val mono">08:00 a.m.</span></div>
+          <div class="resumen-row"><span class="label">Cierre</span><span class="val mono" id="hora-cierre">—</span></div>
+          <div class="resumen-row"><span class="label">Duración</span><span class="val mono">—</span></div>
+        </div>
+ 
+        <div class="section-label">Diferencias detectadas</div>
+        <div id="diffs-panel">
+          <div class="diff-row diff-ok">
+            <span>Efectivo</span>
+            <span style="font-family:var(--mono);font-weight:500;color:var(--accent);">Q 0.00</span>
+          </div>
+          <div class="diff-row diff-ok">
+            <span>Tarjeta</span>
+            <span style="font-family:var(--mono);font-weight:500;color:var(--accent);">Q 0.00</span>
+          </div>
+          <div class="diff-row diff-ok">
+            <span>Transferencia</span>
+            <span style="font-family:var(--mono);font-weight:500;color:var(--accent);">Q 0.00</span>
+          </div>
+        </div>
+ 
+        <hr class="divider" />
+ 
+        <div class="resumen-total" style="margin-bottom:1rem;">
+          <span>Total en caja</span>
+          <span class="val" id="res-total-contado">Q 0.00</span>
+        </div>
+        <div class="resumen-total" style="margin-bottom:1.25rem;">
+          <span>Diferencia total</span>
+          <span class="val" id="res-diferencia" style="color:var(--accent);">Q 0.00</span>
+        </div>
+ 
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label>Observaciones de cierre</label>
+          <textarea id="c-obs" placeholder="Incidencias, faltantes, sobrantes…" style="min-height:60px;"></textarea>
+        </div>
+ 
+        <button class="btn btn-danger btn-lg btn-full" onclick="cerrarCaja()">
+          <i class="ti ti-lock" aria-hidden="true"></i> Cerrar caja
+        </button>
+        <button class="btn btn-ghost btn-full" style="margin-top:8px;" onclick="imprimirCierre()">
+          <i class="ti ti-printer" aria-hidden="true"></i> Imprimir corte
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- Modal confirmación cierre -->
+<div class="modal-overlay" id="modal-cierre" onclick="handleModalClick(event,'modal-cierre')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">¿Confirmar cierre de caja?</div>
+      <button class="modal-close" onclick="closeModal('modal-cierre')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="alert alert-warning">
+      <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+      Esta acción cerrará el turno actual. Asegúrate de haber completado el arqueo correctamente.
+    </div>
+    <div class="resumen-card">
+      <div class="resumen-row"><span class="label">Ventas del turno</span><span class="val mono">Q 4,287.50</span></div>
+      <div class="resumen-row"><span class="label">Total contado</span><span class="val mono" id="mc-contado">Q 0.00</span></div>
+      <div class="resumen-row"><span class="label">Diferencia</span><span class="val mono" id="mc-diff">Q 0.00</span></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-cierre')">Cancelar</button>
+      <button class="btn btn-danger" onclick="confirmarCierre()"><i class="ti ti-lock" aria-hidden="true"></i> Sí, cerrar caja</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- Modal éxito apertura -->
+<div class="modal-overlay" id="modal-apertura-ok" onclick="handleModalClick(event,'modal-apertura-ok')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Caja abierta exitosamente</div>
+      <button class="modal-close" onclick="closeModal('modal-apertura-ok')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="alert alert-success">
+      <i class="ti ti-circle-check" aria-hidden="true"></i>
+      El turno ha sido iniciado. Ya puedes comenzar a registrar ventas.
+    </div>
+    <div class="resumen-card" id="modal-apertura-resumen"></div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeModal('modal-apertura-ok')">Entendido</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- Toast -->
+<div class="toast" id="toast"><i class="ti ti-check" aria-hidden="true"></i> <span id="toast-msg"></span></div>
+ 
+<script>
+  // ── DATA ──
+  const CAJAS = [
+    { id: 1, nombre: "Caja 01", ubicacion: "Entrada principal",  estado: "ocupada"    },
+    { id: 2, nombre: "Caja 02", ubicacion: "Mostrador central",  estado: "disponible" },
+    { id: 3, nombre: "Caja 03", ubicacion: "Área de mesas",      estado: "ocupada"    },
+    { id: 4, nombre: "Caja 04", ubicacion: "Drive-through",      estado: "disponible" },
+    { id: 5, nombre: "Caja 05", ubicacion: "Terraza",            estado: "disponible" },
+  ];
+ 
+  const BILLETES  = [200, 100, 50, 20, 10, 5, 1];
+  const MONEDAS   = [0.50, 0.25, 0.10, 0.05];
+  const DENOM_ALL = [...BILLETES, ...MONEDAS];
+ 
+  let selectedCaja = null;
+  let cajaAbierta = true;
+ 
+  // ── NAVEGACIÓN ──
+  function goTo(page, btn) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    btn.classList.add('active');
+  }
+ 
+  // ── CAJAS GRID ──
+  function renderCajas() {
+    const grid = document.getElementById('cajas-grid');
+    grid.innerHTML = CAJAS.map(c => `
+      <div class="caja-card ${c.estado === 'ocupada' ? 'occupied' : ''} ${selectedCaja === c.id ? 'selected' : ''}"
+           onclick="${c.estado !== 'ocupada' ? `selectCaja(${c.id})` : ''}">
+        <div class="caja-card-top">
+          <div class="caja-icon"><i class="ti ti-device-desktop" aria-hidden="true"></i></div>
+          <span class="badge ${c.estado === 'disponible' ? 'badge-green' : c.estado === 'ocupada' ? 'badge-amber' : 'badge-red'}">
+            ${c.estado === 'disponible' ? 'Disponible' : c.estado === 'ocupada' ? 'Ocupada' : 'Fuera de servicio'}
+          </span>
+        </div>
+        <div class="caja-num">${c.nombre}</div>
+        <div class="caja-loc">${c.ubicacion}</div>
+        <div class="check-icon"><i class="ti ti-check" aria-hidden="true"></i></div>
+      </div>
+    `).join('');
+  }
+ 
+  function selectCaja(id) {
+    selectedCaja = id;
+    renderCajas();
+    const caja = CAJAS.find(c => c.id === id);
+    showToast(`${caja.nombre} seleccionada`);
+  }
+ 
+  // ── DENOMINACIONES ──
+  function buildDenomGrid(containerId, denomsArr) {
+    const el = document.getElementById(containerId);
+    el.innerHTML = denomsArr.map(d => {
+      const key = 'denom_' + containerId + '_' + (d + '').replace('.', '_');
+      const label = d >= 1 ? `Q ${d}` : `Q ${d.toFixed(2)}`;
+      return `<div class="denom-row">
+        <span class="denom-label">${label}</span>
+        <input type="number" min="0" value="0" id="${key}" oninput="recalcFondo()" style="width:50px;" />
+        <span class="denom-subtotal" id="${key}_sub">Q 0.00</span>
+      </div>`;
+    }).join('');
+  }
+ 
+  function recalcFondo() {
+    let total = 0;
+    const desgloseLines = [];
+    DENOM_ALL.forEach(d => {
+      const bKey = 'denom_billetes-grid_'  + (d + '').replace('.', '_');
+      const mKey = 'denom_monedas-grid_'   + (d + '').replace('.', '_');
+      const key = document.getElementById(bKey) ? bKey : document.getElementById(mKey) ? mKey : null;
+      if (!key) return;
+      const qty = parseInt(document.getElementById(key).value) || 0;
+      const sub = qty * d;
+      total += sub;
+      const subEl = document.getElementById(key + '_sub');
+      if (subEl) subEl.textContent = `Q ${sub.toFixed(2)}`;
+      if (qty > 0) {
+        const label = d >= 1 ? `Q ${d}` : `Q ${d.toFixed(2)}`;
+        desgloseLines.push(`<div class="resumen-row"><span class="label">${qty}× ${label}</span><span class="val mono">Q ${sub.toFixed(2)}</span></div>`);
+      }
+    });
+    document.getElementById('total-fondo').textContent = `Q ${total.toFixed(2)}`;
+    const dw = document.getElementById('desglose-wrap');
+    dw.innerHTML = desgloseLines.length
+      ? desgloseLines.join('')
+      : '<div style="font-size:12px;color:var(--muted);text-align:center;padding:0.5rem 0;">Ingresa las denominaciones</div>';
+ 
+    // sync resumen fields
+    const cajaSel = document.getElementById('ap-caja');
+    if (cajaSel) document.getElementById('res-caja').textContent   = cajaSel.value;
+    const cajeroEl = document.getElementById('ap-cajero');
+    if (cajeroEl) document.getElementById('res-cajero').textContent = cajeroEl.value;
+    const turnoEl = document.getElementById('ap-turno');
+    if (turnoEl) document.getElementById('res-turno').textContent  = turnoEl.value;
+    const fechaEl = document.getElementById('ap-fecha');
+    if (fechaEl) document.getElementById('res-fecha').textContent  = fechaEl.value || '—';
+    const horaEl = document.getElementById('ap-hora');
+    if (horaEl) document.getElementById('res-hora').textContent   = horaEl.value || '—';
+  }
+ 
+  // Cierre
+  function buildCierreDenomGrids() {
+    const bGrid = document.getElementById('cierre-billetes-grid');
+    const mGrid = document.getElementById('cierre-monedas-grid');
+    bGrid.innerHTML = BILLETES.map(d => {
+      const key = 'c_' + (d + '').replace('.', '_');
+      return `<div class="denom-row">
+        <span class="denom-label">Q ${d}</span>
+        <input type="number" min="0" value="0" id="${key}" oninput="recalcContado()" style="width:50px;" />
+        <span class="denom-subtotal" id="${key}_sub">Q 0.00</span>
+      </div>`;
+    }).join('');
+    mGrid.innerHTML = MONEDAS.map(d => {
+      const key = 'c_' + (d + '').replace('.', '_');
+      return `<div class="denom-row">
+        <span class="denom-label">Q ${d.toFixed(2)}</span>
+        <input type="number" min="0" value="0" id="${key}" oninput="recalcContado()" style="width:50px;" />
+        <span class="denom-subtotal" id="${key}_sub">Q 0.00</span>
+      </div>`;
+    }).join('');
+  }
+ 
+  function recalcContado() {
+    let total = 0;
+    [...BILLETES, ...MONEDAS].forEach(d => {
+      const key = 'c_' + (d + '').replace('.', '_');
+      const el = document.getElementById(key);
+      if (!el) return;
+      const qty = parseInt(el.value) || 0;
+      const sub = qty * d;
+      total += sub;
+      const s = document.getElementById(key + '_sub');
+      if (s) s.textContent = `Q ${sub.toFixed(2)}`;
+    });
+    document.getElementById('total-contado').textContent   = `Q ${total.toFixed(2)}`;
+    document.getElementById('res-total-contado').textContent = `Q ${total.toFixed(2)}`;
+    const esperado = 4787.50;
+    const diff = total - esperado;
+    const diffEl = document.getElementById('res-diferencia');
+    diffEl.textContent = `Q ${diff.toFixed(2)}`;
+    diffEl.style.color = diff === 0 ? 'var(--accent)' : diff > 0 ? 'var(--amber)' : 'var(--red)';
+    document.getElementById('mc-contado').textContent = `Q ${total.toFixed(2)}`;
+    document.getElementById('mc-diff').textContent    = `Q ${diff.toFixed(2)}`;
+    document.getElementById('hora-cierre').textContent = new Date().toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' });
+  }
+ 
+  function recalcDiff(input) { /* visual only for table diffs */ }
+ 
+  // ── ASIGNACIÓN ──
+  function asignarCaja() {
+    const cajero = document.getElementById('a-cajero').value;
+    const turno  = document.getElementById('a-turno').value.split(' ')[0];
+    if (!selectedCaja) { showToast('Selecciona una caja primero'); return; }
+    if (!cajero)       { showToast('Selecciona un cajero'); return; }
+    const caja = CAJAS.find(c => c.id === selectedCaja);
+    const tbody = document.getElementById('asignaciones-tbody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="mono">${caja.nombre}</td><td>${cajero}</td><td>${turno}</td><td><span class="badge badge-green">Activa</span></td>`;
+    tbody.appendChild(tr);
+    caja.estado = 'ocupada';
+    selectedCaja = null;
+    renderCajas();
+    limpiarAsignacion();
+    showToast(`${caja.nombre} asignada a ${cajero}`);
+  }
+ 
+  function limpiarAsignacion() {
+    document.getElementById('a-cajero').value = '';
+    document.getElementById('a-notas').value  = '';
+    selectedCaja = null;
+    renderCajas();
+  }
+ 
+  // ── APERTURA ──
+  function abrirCaja() {
+    const fondo = document.getElementById('total-fondo').textContent;
+    const caja  = document.getElementById('ap-caja').value;
+    document.getElementById('modal-apertura-resumen').innerHTML = `
+      <div class="resumen-row"><span class="label">Caja</span><span class="val mono">${caja}</span></div>
+      <div class="resumen-row"><span class="label">Fondo inicial</span><span class="val mono" style="color:var(--accent);">${fondo}</span></div>
+      <div class="resumen-row"><span class="label">Hora apertura</span><span class="val mono">${new Date().toLocaleTimeString('es-GT',{hour:'2-digit',minute:'2-digit'})}</span></div>
+    `;
+    document.getElementById('modal-apertura-ok').classList.add('open');
+    updateNavStatus(true);
+  }
+ 
+  function imprimirApertura() { showToast('Enviando a impresora…'); }
+ 
+  // ── CIERRE ──
+  function cerrarCaja() {
+    document.getElementById('modal-cierre').classList.add('open');
+  }
+ 
+  function confirmarCierre() {
+    closeModal('modal-cierre');
+    updateNavStatus(false);
+    showToast('Caja cerrada. Corte generado.');
+  }
+ 
+  function imprimirCierre() { showToast('Imprimiendo corte de caja…'); }
+ 
+  function updateNavStatus(open) {
+    const el = document.getElementById('nav-status');
+    el.className = 'status-pill ' + (open ? 'pill-open' : 'pill-closed');
+    el.innerHTML = `<span class="pill-dot"></span> ${open ? 'Caja abierta' : 'Caja cerrada'}`;
+    cajaAbierta = open;
+  }
+ 
+  // ── MODAL ──
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  function handleModalClick(e, id) { if (e.target.id === id) closeModal(id); }
+ 
+  // ── TOAST ──
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+ 
+  // ── INIT ──
+  const today = new Date().toISOString().split('T')[0];
+  const nowTime = new Date().toTimeString().slice(0, 5);
+  document.querySelectorAll('input[type=date]').forEach(el => el.value = today);
+  document.querySelectorAll('input[type=time]').forEach(el => el.value = nowTime);
+ 
+  renderCajas();
+  buildDenomGrid('billetes-grid', BILLETES);
+  buildDenomGrid('monedas-grid', MONEDAS);
+  buildCierreDenomGrids();
+</script>
+</body>
+</html>
