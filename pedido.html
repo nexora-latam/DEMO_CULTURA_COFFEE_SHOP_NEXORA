@@ -1,156 +1,228 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Toma de Pedidos - Cultura Coffee</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { margin: 0; font-family: sans-serif; background: #dcdedd; padding-bottom: 90px; }
-        
+        :root {
+            --bg-dark: #121212;
+            --surface: #1e1e1e;
+            --surface-hover: #2c2c2c;
+            --border: #333333;
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --accent-green: #a3e635; /* Verde estilo neón de tu imagen */
+            --accent-dark: #166534;
+        }
+
+        body { 
+            margin: 0; 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-dark); 
+            color: var(--text-main);
+            padding-bottom: 100px; /* Espacio para la barra inferior */
+        }
+
         /* Encabezado */
-        header { background: #233447; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
-        .btn-volver { background: #116c27; color: white; border: none; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-size: 14px; }
-
-        /* Tipo de Pedido (Mesa / Llevar) */
-        .tipo-pedido-container { display: flex; padding: 15px; gap: 10px; background: white; border-bottom: 1px solid #ccc; }
-        .btn-tipo { flex: 1; padding: 12px; border: 2px solid #2a5a8f; background: white; color: #2a5a8f; font-weight: bold; font-size: 16px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-        .btn-tipo.activo { background: #2a5a8f; color: white; }
+        header { 
+            background-color: var(--surface); 
+            padding: 15px 20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            position: sticky; 
+            top: 0; 
+            z-index: 10;
+            border-bottom: 1px solid var(--border);
+        }
         
-        .mesa-input { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 15px; background: white; border-bottom: 1px solid #ccc; transition: 0.3s; }
-        .mesa-input input { width: 60px; padding: 8px; font-size: 16px; text-align: center; border: 1px solid #ccc; border-radius: 5px; }
+        .btn-volver { 
+            background-color: transparent; 
+            color: var(--text-muted); 
+            border: 1px solid var(--border); 
+            padding: 8px 15px; 
+            border-radius: 8px; 
+            text-decoration: none; 
+            font-size: 14px;
+            font-weight: 500;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-volver:hover { background-color: var(--border); color: var(--text-main); }
 
-        /* Contenedor de Productos */
-        .seccion { padding: 15px; }
-        h3 { color: #2c4159; border-bottom: 2px solid #2c4159; padding-bottom: 5px; margin-top: 0; }
+        .header-title { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+        .header-title i { color: var(--accent-green); }
+
+        /* Tipo de Pedido (Selector Moderno) */
+        .tipo-pedido-container { 
+            display: flex; 
+            padding: 20px; 
+            gap: 15px; 
+        }
+        .btn-tipo { 
+            flex: 1; 
+            padding: 15px; 
+            background-color: var(--surface); 
+            border: 1px solid var(--border); 
+            color: var(--text-muted); 
+            font-weight: 600; 
+            font-size: 15px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-tipo.activo { 
+            background-color: rgba(163, 230, 53, 0.1); 
+            border-color: var(--accent-green); 
+            color: var(--accent-green); 
+        }
+
+        /* Input de Mesa */
+        .mesa-input { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 15px 20px; 
+            margin: 0 20px 20px 20px;
+            background-color: var(--surface); 
+            border: 1px solid var(--border); 
+            border-radius: 12px;
+        }
+        .mesa-input input { 
+            width: 80px; 
+            padding: 10px; 
+            font-size: 16px; 
+            text-align: center; 
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            border: 1px solid var(--border); 
+            border-radius: 8px;
+            outline: none;
+            font-weight: bold;
+        }
+        .mesa-input input:focus { border-color: var(--accent-green); }
+
+        /* Catálogo de Productos */
+        .seccion { padding: 0 20px 20px 20px; }
+        .seccion-titulo { 
+            color: var(--text-muted); 
+            font-size: 14px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
         
-        .grid-productos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;}
-        .producto-card { background: white; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #ccc; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .producto-card b { display: block; font-size: 16px; }
-        .producto-card span { color: #116c27; font-weight: bold; }
+        .grid-productos { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
+            gap: 15px; 
+            margin-bottom: 30px;
+        }
+        
+        .producto-card { 
+            background-color: var(--surface); 
+            padding: 20px 15px; 
+            border-radius: 16px; 
+            text-align: center; 
+            border: 1px solid var(--border); 
+            cursor: pointer; 
+            transition: transform 0.1s, background-color 0.2s; 
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .producto-card:active { transform: scale(0.95); }
+        .producto-card:hover { border-color: #555; background-color: var(--surface-hover); }
+        
+        .producto-icono { font-size: 24px; color: var(--text-muted); margin-bottom: 5px; }
+        .producto-nombre { font-size: 15px; font-weight: 600; }
+        .producto-precio { color: var(--accent-green); font-weight: 700; font-size: 16px; }
 
-        /* Resumen del Pedido (Carrito) */
-        #resumen-fijo { position: fixed; bottom: 0; left: 0; width: 100%; background: #233447; color: white; padding: 15px; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -4px 10px rgba(0,0,0,0.2); z-index: 10;}
-        .btn-confirmar { background: #68c049; color: #0a1813; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        /* Resumen Inferior (Carrito) */
+        #resumen-fijo { 
+            position: fixed; 
+            bottom: 0; left: 0; 
+            width: 100%; 
+            background-color: var(--surface); 
+            padding: 20px; 
+            box-sizing: border-box; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-top: 1px solid var(--border);
+            z-index: 20;
+        }
+        
+        .total-info span { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;}
+        .total-info b { font-size: 24px; display: block; margin-top: 5px;}
+        
+        .btn-confirmar { 
+            background-color: var(--accent-green); 
+            color: #000000; 
+            border: none; 
+            padding: 15px 25px; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            font-size: 16px; 
+            cursor: pointer; 
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.2s;
+        }
+        .btn-confirmar:hover { background-color: #90d12c; transform: translateY(-2px); }
     </style>
 </head>
 <body>
 
     <header>
-        <a href="dashbord.html" class="btn-volver">⬅ Volver</a>
-        <h2 style="font-size: 18px; margin: 0;">Nueva Orden</h2>
+        <a href="dashbord.html" class="btn-volver"><i class="fas fa-arrow-left"></i> Volver</a>
+        <div class="header-title">
+            <i class="fas fa-coffee"></i> Nueva Orden
+        </div>
     </header>
 
     <div class="tipo-pedido-container">
-        <button id="btn-mesa" class="btn-tipo activo" onclick="seleccionarTipo('mesa')">🍽️ En Mesa</button>
-        <button id="btn-llevar" class="btn-tipo" onclick="seleccionarTipo('llevar')">🛍️ Para Llevar</button>
+        <button id="btn-mesa" class="btn-tipo activo" onclick="seleccionarTipo('mesa')">
+            <i class="fas fa-utensils"></i> En Mesa
+        </button>
+        <button id="btn-llevar" class="btn-tipo" onclick="seleccionarTipo('llevar')">
+            <i class="fas fa-shopping-bag"></i> Para Llevar
+        </button>
     </div>
 
     <div id="caja-mesa" class="mesa-input">
-        <b>Número de Mesa:</b>
+        <span style="color: var(--text-muted); font-weight: 500;">Asignar número de mesa</span>
         <input type="number" id="num-mesa" placeholder="#" min="1">
     </div>
 
     <div class="seccion">
-        <h3>☕ Cafés</h3>
+        <div class="seccion-titulo">Bebidas Calientes</div>
         <div class="grid-productos">
             <div class="producto-card" onclick="agregarAlPedido('Espresso', 15)">
-                <b>Espresso</b>
-                <span>Q15.00</span>
+                <div class="producto-icono"><i class="fas fa-mug-hot"></i></div>
+                <div class="producto-nombre">Espresso</div>
+                <div class="producto-precio">Q15.00</div>
             </div>
             <div class="producto-card" onclick="agregarAlPedido('Americano', 18)">
-                <b>Americano</b>
-                <span>Q18.00</span>
+                <div class="producto-icono"><i class="fas fa-mug-hot"></i></div>
+                <div class="producto-nombre">Americano</div>
+                <div class="producto-precio">Q18.00</div>
             </div>
             <div class="producto-card" onclick="agregarAlPedido('Latte', 22)">
-                <b>Latte</b>
-                <span>Q22.00</span>
+                <div class="producto-icono"><i class="fas fa-coffee"></i></div>
+                <div class="producto-nombre">Latte</div>
+                <div class="producto-precio">Q22.00</div>
             </div>
             <div class="producto-card" onclick="agregarAlPedido('Cappuccino', 22)">
-                <b>Cappuccino</b>
-                <span>Q22.00</span>
-            </div>
-        </div>
-
-        <h3>🥐 Acompañamientos</h3>
-        <div class="grid-productos">
-            <div class="producto-card" onclick="agregarAlPedido('Croissant', 12)">
-                <b>Croissant</b>
-                <span>Q12.00</span>
-            </div>
-            <div class="producto-card" onclick="agregarAlPedido('Muffin', 10)">
-                <b>Muffin</b>
-                <span>Q10.00</span>
-            </div>
-        </div>
-    </div>
-
-    <div id="resumen-fijo">
-        <div>
-            <span style="font-size: 14px; color: #8ba396;">Total Pedido:</span><br>
-            <b style="font-size: 20px;">Q <span id="total-cuenta">0.00</span></b>
-        </div>
-        <button class="btn-confirmar" onclick="enviarPedido()">Enviar Orden ➔</button>
-    </div>
-
-    <script>
-        let total = 0;
-        let items = [];
-        let tipoActual = 'mesa';
-
-        // Lógica para cambiar entre Mesa y Llevar
-        function seleccionarTipo(tipo) {
-            tipoActual = tipo;
-            
-            let btnMesa = document.getElementById('btn-mesa');
-            let btnLlevar = document.getElementById('btn-llevar');
-            let cajaMesa = document.getElementById('caja-mesa');
-
-            if (tipo === 'mesa') {
-                btnMesa.classList.add('activo');
-                btnLlevar.classList.remove('activo');
-                cajaMesa.style.display = 'flex'; // Muestra el input de mesa
-            } else {
-                btnLlevar.classList.add('activo');
-                btnMesa.classList.remove('activo');
-                cajaMesa.style.display = 'none'; // Oculta el input de mesa
-            }
-        }
-
-        // Lógica del carrito
-        function agregarAlPedido(nombre, precio) {
-            total += precio;
-            items.push(nombre);
-            document.getElementById('total-cuenta').innerText = total.toFixed(2);
-        }
-
-        // Lógica para enviar
-        function enviarPedido() {
-            if (items.length === 0) {
-                alert("Agrega al menos un producto antes de enviar la orden.");
-                return;
-            }
-
-            // Armar el mensaje dependiendo del tipo
-            let infoPedido = "";
-            if (tipoActual === 'mesa') {
-                let numeroMesa = document.getElementById('num-mesa').value;
-                if(numeroMesa === "") {
-                    alert("Por favor, ingresa el número de mesa.");
-                    return;
-                }
-                infoPedido = "🍽️ Pedido para MESA #" + numeroMesa;
-            } else {
-                infoPedido = "🛍️ Pedido PARA LLEVAR";
-            }
-            
-            alert(infoPedido + "\n\nProductos: " + items.join(", ") + "\nTotal a cobrar: Q" + total.toFixed(2) + "\n\n¡Enviado a cocina/barra exitosamente!");
-            
-            // Limpiar todo después de enviar
-            total = 0;
-            items = [];
-            document.getElementById('total-cuenta').innerText = "0.00";
-            document.getElementById('num-mesa').value = "";
-        }
-    </script>
-
-</body>
-</html>
+                <div class="
