@@ -4,225 +4,103 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Toma de Pedidos - Cultura Coffee</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --bg-dark: #121212;
-            --surface: #1e1e1e;
-            --surface-hover: #2c2c2c;
-            --border: #333333;
-            --text-main: #ffffff;
-            --text-muted: #a1a1aa;
-            --accent-green: #a3e635; /* Verde estilo neón de tu imagen */
-            --accent-dark: #166534;
-        }
-
-        body { 
-            margin: 0; 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg-dark); 
-            color: var(--text-main);
-            padding-bottom: 100px; /* Espacio para la barra inferior */
-        }
-
-        /* Encabezado */
-        header { 
-            background-color: var(--surface); 
-            padding: 15px 20px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            position: sticky; 
-            top: 0; 
-            z-index: 10;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .btn-volver { 
-            background-color: transparent; 
-            color: var(--text-muted); 
-            border: 1px solid var(--border); 
-            padding: 8px 15px; 
-            border-radius: 8px; 
-            text-decoration: none; 
-            font-size: 14px;
-            font-weight: 500;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-volver:hover { background-color: var(--border); color: var(--text-main); }
-
-        .header-title { display: flex; align-items: center; gap: 10px; font-weight: 600; }
-        .header-title i { color: var(--accent-green); }
-
-        /* Tipo de Pedido (Selector Moderno) */
-        .tipo-pedido-container { 
-            display: flex; 
-            padding: 20px; 
-            gap: 15px; 
-        }
-        .btn-tipo { 
-            flex: 1; 
-            padding: 15px; 
-            background-color: var(--surface); 
-            border: 1px solid var(--border); 
-            color: var(--text-muted); 
-            font-weight: 600; 
-            font-size: 15px; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            transition: all 0.3s ease; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .btn-tipo.activo { 
-            background-color: rgba(163, 230, 53, 0.1); 
-            border-color: var(--accent-green); 
-            color: var(--accent-green); 
-        }
-
-        /* Input de Mesa */
-        .mesa-input { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            padding: 15px 20px; 
-            margin: 0 20px 20px 20px;
-            background-color: var(--surface); 
-            border: 1px solid var(--border); 
-            border-radius: 12px;
-        }
-        .mesa-input input { 
-            width: 80px; 
-            padding: 10px; 
-            font-size: 16px; 
-            text-align: center; 
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            border: 1px solid var(--border); 
-            border-radius: 8px;
-            outline: none;
-            font-weight: bold;
-        }
-        .mesa-input input:focus { border-color: var(--accent-green); }
-
-        /* Catálogo de Productos */
-        .seccion { padding: 0 20px 20px 20px; }
-        .seccion-titulo { 
-            color: var(--text-muted); 
-            font-size: 14px; 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-        
-        .grid-productos { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
-            gap: 15px; 
-            margin-bottom: 30px;
-        }
-        
-        .producto-card { 
-            background-color: var(--surface); 
-            padding: 20px 15px; 
-            border-radius: 16px; 
-            text-align: center; 
-            border: 1px solid var(--border); 
-            cursor: pointer; 
-            transition: transform 0.1s, background-color 0.2s; 
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .producto-card:active { transform: scale(0.95); }
-        .producto-card:hover { border-color: #555; background-color: var(--surface-hover); }
-        
-        .producto-icono { font-size: 24px; color: var(--text-muted); margin-bottom: 5px; }
-        .producto-nombre { font-size: 15px; font-weight: 600; }
-        .producto-precio { color: var(--accent-green); font-weight: 700; font-size: 16px; }
-
-        /* Resumen Inferior (Carrito) */
-        #resumen-fijo { 
-            position: fixed; 
-            bottom: 0; left: 0; 
-            width: 100%; 
-            background-color: var(--surface); 
-            padding: 20px; 
-            box-sizing: border-box; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-top: 1px solid var(--border);
-            z-index: 20;
-        }
-        
-        .total-info span { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;}
-        .total-info b { font-size: 24px; display: block; margin-top: 5px;}
-        
-        .btn-confirmar { 
-            background-color: var(--accent-green); 
-            color: #000000; 
-            border: none; 
-            padding: 15px 25px; 
-            border-radius: 12px; 
-            font-weight: 700; 
-            font-size: 16px; 
-            cursor: pointer; 
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: 0.2s;
-        }
-        .btn-confirmar:hover { background-color: #90d12c; transform: translateY(-2px); }
+        body { font-family: 'Inter', sans-serif; background-color: #121212; color: #ffffff; }
+        .active-tab { background-color: rgba(163, 230, 53, 0.1); border-color: #a3e635; color: #a3e635; }
     </style>
 </head>
-<body>
+<body class="pb-24">
 
-    <header>
-        <a href="dashbord.html" class="btn-volver"><i class="fas fa-arrow-left"></i> Volver</a>
-        <div class="header-title">
-            <i class="fas fa-coffee"></i> Nueva Orden
+    <header class="bg-[#1e1e1e] p-4 flex items-center justify-between sticky top-0 z-50 border-b border-[#333]">
+        <a href="dashbord.html" class="text-gray-400 border border-[#333] px-3 py-2 rounded-lg flex items-center gap-2 text-sm">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <div class="font-bold flex items-center gap-2">
+            <i class="fas fa-coffee text-[#a3e635]"></i> Nueva Orden
         </div>
     </header>
 
-    <div class="tipo-pedido-container">
-        <button id="btn-mesa" class="btn-tipo activo" onclick="seleccionarTipo('mesa')">
-            <i class="fas fa-utensils"></i> En Mesa
+    <div class="flex p-4 gap-4">
+        <button id="btnMesa" onclick="setTipo('mesa')" class="flex-1 p-4 rounded-xl border border-[#333] bg-[#1e1e1e] font-bold active-tab">
+            <i class="fas fa-utensils"></i> Mesa
         </button>
-        <button id="btn-llevar" class="btn-tipo" onclick="seleccionarTipo('llevar')">
-            <i class="fas fa-shopping-bag"></i> Para Llevar
+        <button id="btnLlevar" onclick="setTipo('llevar')" class="flex-1 p-4 rounded-xl border border-[#333] bg-[#1e1e1e] font-bold text-gray-500">
+            <i class="fas fa-shopping-bag"></i> Llevar
         </button>
     </div>
 
-    <div id="caja-mesa" class="mesa-input">
-        <span style="color: var(--text-muted); font-weight: 500;">Asignar número de mesa</span>
-        <input type="number" id="num-mesa" placeholder="#" min="1">
+    <div id="cajaMesa" class="mx-4 p-4 bg-[#1e1e1e] border border-[#333] rounded-xl flex justify-between items-center mb-6">
+        <span class="text-gray-400">Número de mesa:</span>
+        <input type="number" id="numMesa" class="w-16 bg-[#121212] border border-[#333] rounded-lg p-2 text-center font-bold outline-none focus:border-[#a3e635]" placeholder="#">
     </div>
 
-    <div class="seccion">
-        <div class="seccion-titulo">Bebidas Calientes</div>
-        <div class="grid-productos">
-            <div class="producto-card" onclick="agregarAlPedido('Espresso', 15)">
-                <div class="producto-icono"><i class="fas fa-mug-hot"></i></div>
-                <div class="producto-nombre">Espresso</div>
-                <div class="producto-precio">Q15.00</div>
+    <div class="px-4 space-y-6">
+        <div>
+            <h3 class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-4">Cafetería</h3>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="add('Espresso', 15)" class="bg-[#1e1e1e] p-4 rounded-2xl border border-[#333] text-center active:scale-95 transition-transform">
+                    <i class="fas fa-mug-hot text-gray-500 mb-2"></i>
+                    <p class="font-bold text-sm">Espresso</p>
+                    <p class="text-[#a3e635] font-bold">Q15</p>
+                </button>
+                <button onclick="add('Latte', 22)" class="bg-[#1e1e1e] p-4 rounded-2xl border border-[#333] text-center active:scale-95 transition-transform">
+                    <i class="fas fa-coffee text-gray-500 mb-2"></i>
+                    <p class="font-bold text-sm">Latte</p>
+                    <p class="text-[#a3e635] font-bold">Q22</p>
+                </button>
             </div>
-            <div class="producto-card" onclick="agregarAlPedido('Americano', 18)">
-                <div class="producto-icono"><i class="fas fa-mug-hot"></i></div>
-                <div class="producto-nombre">Americano</div>
-                <div class="producto-precio">Q18.00</div>
+        </div>
+
+        <div>
+            <h3 class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-4">Panadería</h3>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="add('Croissant', 12)" class="bg-[#1e1e1e] p-4 rounded-2xl border border-[#333] text-center active:scale-95 transition-transform">
+                    <i class="fas fa-bread-slice text-gray-500 mb-2"></i>
+                    <p class="font-bold text-sm">Croissant</p>
+                    <p class="text-[#a3e635] font-bold">Q12</p>
+                </button>
             </div>
-            <div class="producto-card" onclick="agregarAlPedido('Latte', 22)">
-                <div class="producto-icono"><i class="fas fa-coffee"></i></div>
-                <div class="producto-nombre">Latte</div>
-                <div class="producto-precio">Q22.00</div>
-            </div>
-            <div class="producto-card" onclick="agregarAlPedido('Cappuccino', 22)">
-                <div class="
+        </div>
+    </div>
+
+    <div class="fixed bottom-0 left-0 w-full bg-[#1e1e1e] p-5 border-t border-[#333] flex justify-between items-center z-50">
+        <div>
+            <p class="text-gray-500 text-xs uppercase">Total Pedido</p>
+            <p class="text-2xl font-bold">Q <span id="total">0.00</span></p>
+        </div>
+        <button onclick="send()" class="bg-[#a3e635] text-black px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-[#90d12c]">
+            Enviar <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+
+    <script>
+        let total = 0;
+        let items = [];
+        let tipo = 'mesa';
+
+        function setTipo(t) {
+            tipo = t;
+            document.getElementById('btnMesa').className = t === 'mesa' ? 'flex-1 p-4 rounded-xl border font-bold active-tab' : 'flex-1 p-4 rounded-xl border border-[#333] bg-[#1e1e1e] font-bold text-gray-500';
+            document.getElementById('btnLlevar').className = t === 'llevar' ? 'flex-1 p-4 rounded-xl border font-bold active-tab' : 'flex-1 p-4 rounded-xl border border-[#333] bg-[#1e1e1e] font-bold text-gray-500';
+            document.getElementById('cajaMesa').style.display = t === 'mesa' ? 'flex' : 'none';
+        }
+
+        function add(n, p) {
+            total += p;
+            items.push(n);
+            document.getElementById('total').innerText = total.toFixed(2);
+        }
+
+        function send() {
+            if (items.length === 0) return alert("Agrega productos primero");
+            let m = tipo === 'mesa' ? "Mesa #" + document.getElementById('numMesa').value : "Para Llevar";
+            if (tipo === 'mesa' && !document.getElementById('numMesa').value) return alert("Pon el número de mesa");
+            
+            alert("Orden enviada: " + m + "\nTotal: Q" + total.toFixed(2));
+            location.reload();
+        }
+    </script>
+</body>
+</html>
