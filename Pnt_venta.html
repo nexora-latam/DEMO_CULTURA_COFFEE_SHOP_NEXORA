@@ -1,1201 +1,871 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Punto de Venta — Cafetería</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
- 
-    :root {
-      --bg:        #0f0f0e;
-      --bg2:       #1a1a18;
-      --bg3:       #242422;
-      --bg4:       #2e2e2b;
-      --border:    rgba(255,255,255,0.08);
-      --border2:   rgba(255,255,255,0.13);
-      --text:      #f0ede8;
-      --muted:     #8a8880;
-      --accent:    #c9f261;
-      --accent2:   #a8d43e;
-      --accent-bg: rgba(201,242,97,0.1);
-      --red:       #ff6b6b;
-      --red-bg:    rgba(255,107,107,0.1);
-      --amber:     #f0a84a;
-      --amber-bg:  rgba(240,168,74,0.1);
-      --teal:      #4ecdc4;
-      --teal-bg:   rgba(78,205,196,0.1);
-      --radius:    10px;
-      --radius-lg: 14px;
-      --mono:      'DM Mono', monospace;
-    }
- 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
- 
-    /* ── TOP NAV ── */
-    .topnav {
-      display: flex;
-      align-items: center;
-      padding: 0 1.5rem;
-      height: 56px;
-      border-bottom: 0.5px solid var(--border);
-      background: var(--bg2);
-      gap: 0;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-    .nav-brand {
-      display: flex; align-items: center; gap: 10px;
-      margin-right: 2rem;
-    }
-    .nav-logo {
-      width: 32px; height: 32px;
-      background: var(--accent);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
-      color: #1a1a18;
-    }
-    .nav-brand-name { font-size: 15px; font-weight: 500; color: var(--text); }
- 
-    .nav-tabs { display: flex; gap: 2px; flex: 1; }
-    .nav-tab {
-      display: flex; align-items: center; gap: 7px;
-      padding: 6px 14px;
-      border-radius: var(--radius);
-      border: none;
-      background: transparent;
-      font-family: inherit;
-      font-size: 13px;
-      color: var(--muted);
-      cursor: pointer;
-      transition: all 0.15s;
-      white-space: nowrap;
-    }
-    .nav-tab:hover { background: var(--bg3); color: var(--text); }
-    .nav-tab.active { background: var(--bg3); color: var(--accent); }
-    .nav-tab .tab-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      display: none;
-    }
-    .nav-tab.active .tab-dot { display: block; }
- 
-    .nav-right {
-      display: flex; align-items: center; gap: 10px;
-      margin-left: auto;
-    }
-    .nav-user {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 13px; color: var(--muted);
-    }
-    .nav-avatar {
-      width: 30px; height: 30px;
-      border-radius: 50%;
-      background: var(--bg4);
-      border: 0.5px solid var(--border2);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 500; color: var(--text);
-    }
-    .status-pill {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 10px;
-      border-radius: 99px;
-      font-size: 11px; font-weight: 500;
-    }
-    .pill-open   { background: var(--accent-bg); color: var(--accent); }
-    .pill-closed { background: var(--bg4); color: var(--muted); }
-    .pill-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
- 
-    /* ── PAGES ── */
-    .page { display: none; padding: 2rem 1.5rem; max-width: 1100px; margin: 0 auto; width: 100%; }
-    .page.active { display: block; }
- 
-    .page-header { margin-bottom: 1.75rem; }
-    .page-title { font-size: 22px; font-weight: 500; color: var(--text); }
-    .page-sub   { font-size: 13px; color: var(--muted); margin-top: 4px; }
- 
-    /* ── CARDS ── */
-    .card {
-      background: var(--bg2);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.25rem 1.5rem;
-    }
-    .card-title {
-      font-size: 13px; font-weight: 500;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 1rem;
-    }
- 
-    /* ── STATS ROW ── */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 10px;
-      margin-bottom: 1.5rem;
-    }
-    .stat-card {
-      background: var(--bg2);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1rem 1.25rem;
-    }
-    .stat-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-    .stat-val   { font-size: 26px; font-weight: 500; font-family: var(--mono); }
-    .stat-val.green { color: var(--accent); }
-    .stat-val.amber { color: var(--amber); }
-    .stat-val.red   { color: var(--red); }
-    .stat-val.teal  { color: var(--teal); }
- 
-    /* ── FORMS ── */
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .form-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group.full { grid-column: 1 / -1; }
-    label { font-size: 12px; color: var(--muted); }
-    input, select, textarea {
-      background: var(--bg3);
-      border: 0.5px solid var(--border2);
-      border-radius: var(--radius);
-      padding: 9px 12px;
-      font-family: inherit;
-      font-size: 14px;
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.15s;
-      width: 100%;
-    }
-    input:focus, select:focus, textarea:focus { border-color: var(--accent); }
-    input::placeholder { color: var(--muted); }
-    select option { background: var(--bg3); }
-    textarea { resize: vertical; min-height: 80px; }
- 
-    .input-prefix {
-      position: relative;
-    }
-    .input-prefix span {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--muted);
-      font-size: 14px;
-      font-family: var(--mono);
-      pointer-events: none;
-    }
-    .input-prefix input { padding-left: 28px; font-family: var(--mono); }
- 
-    /* ── BUTTONS ── */
-    .btn {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 9px 18px;
-      border-radius: var(--radius);
-      border: none;
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s;
-      white-space: nowrap;
-    }
-    .btn-primary { background: var(--accent); color: #1a1a18; }
-    .btn-primary:hover { background: var(--accent2); }
-    .btn-ghost {
-      background: transparent;
-      border: 0.5px solid var(--border2);
-      color: var(--muted);
-    }
-    .btn-ghost:hover { background: var(--bg3); color: var(--text); }
-    .btn-danger { background: var(--red-bg); color: var(--red); border: 0.5px solid rgba(255,107,107,0.2); }
-    .btn-danger:hover { background: rgba(255,107,107,0.18); }
-    .btn-success { background: var(--accent-bg); color: var(--accent); border: 0.5px solid rgba(201,242,97,0.2); }
-    .btn-success:hover { background: rgba(201,242,97,0.18); }
-    .btn-lg { padding: 12px 28px; font-size: 15px; }
-    .btn-full { width: 100%; justify-content: center; }
- 
-    .btn-row { display: flex; gap: 10px; margin-top: 1.5rem; flex-wrap: wrap; }
- 
-    /* ── DIVIDER ── */
-    .divider { border: none; border-top: 0.5px solid var(--border); margin: 1.5rem 0; }
- 
-    /* ── BADGE ── */
-    .badge {
-      display: inline-flex; align-items: center;
-      padding: 3px 9px; border-radius: 99px;
-      font-size: 11px; font-weight: 500;
-    }
-    .badge-green  { background: var(--accent-bg);  color: var(--accent); }
-    .badge-amber  { background: var(--amber-bg);   color: var(--amber); }
-    .badge-red    { background: var(--red-bg);      color: var(--red); }
-    .badge-teal   { background: var(--teal-bg);     color: var(--teal); }
-    .badge-muted  { background: var(--bg4);         color: var(--muted); }
- 
-    /* ── TABLE ── */
-    .table-wrap {
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-    }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead tr { background: var(--bg3); }
-    thead th {
-      padding: 10px 14px;
-      text-align: left;
-      font-size: 11px; font-weight: 500;
-      text-transform: uppercase; letter-spacing: 0.05em;
-      color: var(--muted);
-      border-bottom: 0.5px solid var(--border);
-    }
-    tbody tr { border-bottom: 0.5px solid var(--border); transition: background 0.1s; }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: var(--bg3); }
-    tbody td { padding: 11px 14px; color: var(--text); }
-    td.mono { font-family: var(--mono); }
- 
-    /* ── SECTION LABEL ── */
-    .section-label {
-      font-size: 11px; font-weight: 500;
-      text-transform: uppercase; letter-spacing: 0.07em;
-      color: var(--muted);
-      margin-bottom: 0.75rem;
-    }
- 
-    /* ── ASIGNACION PAGE ── */
-    .cajas-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 12px;
-      margin-bottom: 1.75rem;
-    }
-    .caja-card {
-      background: var(--bg2);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.1rem 1.25rem;
-      cursor: pointer;
-      transition: all 0.15s;
-      position: relative;
-    }
-    .caja-card:hover { border-color: var(--border2); background: var(--bg3); }
-    .caja-card.selected {
-      border-color: var(--accent);
-      background: var(--accent-bg);
-    }
-    .caja-card.occupied {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .caja-card-top {
-      display: flex; align-items: flex-start; justify-content: space-between;
-      margin-bottom: 10px;
-    }
-    .caja-icon {
-      width: 36px; height: 36px;
-      background: var(--bg4);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; color: var(--muted);
-    }
-    .caja-card.selected .caja-icon { background: var(--accent); color: #1a1a18; }
-    .caja-num  { font-size: 16px; font-weight: 500; margin-bottom: 3px; }
-    .caja-loc  { font-size: 12px; color: var(--muted); }
-    .check-icon {
-      position: absolute; top: 10px; right: 10px;
-      width: 20px; height: 20px;
-      border-radius: 50%;
-      background: var(--accent);
-      display: none;
-      align-items: center; justify-content: center;
-      font-size: 12px; color: #1a1a18;
-    }
-    .caja-card.selected .check-icon { display: flex; }
- 
-    .assign-panel {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-    }
- 
-    /* ── APERTURA PAGE ── */
-    .apertura-layout {
-      display: grid;
-      grid-template-columns: 1fr 380px;
-      gap: 1.5rem;
-    }
-    .denom-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 1rem;
-    }
-    .denom-row {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--bg3);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 8px 10px;
-    }
-    .denom-label {
-      font-family: var(--mono);
-      font-size: 13px;
-      color: var(--muted);
-      min-width: 52px;
-    }
-    .denom-row input {
-      background: transparent;
-      border: none;
-      border-bottom: 0.5px solid var(--border2);
-      border-radius: 0;
-      padding: 2px 0;
-      font-size: 14px;
-      font-family: var(--mono);
-      width: 48px;
-      text-align: center;
-    }
-    .denom-row input:focus { border-bottom-color: var(--accent); }
-    .denom-subtotal {
-      margin-left: auto;
-      font-family: var(--mono);
-      font-size: 13px;
-      color: var(--text);
-      min-width: 60px;
-      text-align: right;
-    }
- 
-    .resumen-card {
-      background: var(--bg3);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1rem;
-      margin-bottom: 1rem;
-    }
-    .resumen-row {
-      display: flex; justify-content: space-between;
-      padding: 5px 0;
-      font-size: 13px;
-      border-bottom: 0.5px solid var(--border);
-    }
-    .resumen-row:last-child { border-bottom: none; }
-    .resumen-row .label { color: var(--muted); }
-    .resumen-row .val   { font-family: var(--mono); color: var(--text); }
-    .resumen-total {
-      display: flex; justify-content: space-between;
-      padding: 10px 0 0;
-      font-size: 16px; font-weight: 500;
-    }
-    .resumen-total .val { font-family: var(--mono); color: var(--accent); }
- 
-    /* ── CIERRE PAGE ── */
-    .cierre-layout {
-      display: grid;
-      grid-template-columns: 1fr 360px;
-      gap: 1.5rem;
-    }
-    .cierre-stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 1.5rem;
-    }
-    .cierre-stat {
-      background: var(--bg3);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 0.9rem 1rem;
-    }
-    .diff-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 8px 12px;
-      border-radius: var(--radius);
-      margin-bottom: 6px;
-      font-size: 13px;
-    }
-    .diff-ok  { background: var(--accent-bg); }
-    .diff-low { background: var(--amber-bg); }
-    .diff-bad { background: var(--red-bg); }
- 
-    /* ── TIMELINE ── */
-    .timeline { display: flex; flex-direction: column; gap: 0; }
-    .tl-item {
-      display: flex; gap: 14px;
-      padding-bottom: 18px;
-      position: relative;
-    }
-    .tl-item:last-child { padding-bottom: 0; }
-    .tl-left { display: flex; flex-direction: column; align-items: center; width: 28px; }
-    .tl-dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: var(--bg4);
-      border: 2px solid var(--border2);
-      flex-shrink: 0;
-      margin-top: 3px;
-    }
-    .tl-dot.done { background: var(--accent); border-color: var(--accent); }
-    .tl-line {
-      flex: 1; width: 1px;
-      background: var(--border);
-      margin-top: 4px;
-    }
-    .tl-item:last-child .tl-line { display: none; }
-    .tl-content { flex: 1; }
-    .tl-title { font-size: 13px; font-weight: 500; color: var(--text); }
-    .tl-time  { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: var(--mono); }
-    .tl-desc  { font-size: 12px; color: var(--muted); margin-top: 4px; }
- 
-    /* ── ALERT BOX ── */
-    .alert {
-      display: flex; align-items: flex-start; gap: 10px;
-      padding: 12px 14px;
-      border-radius: var(--radius);
-      font-size: 13px;
-      margin-bottom: 1rem;
-    }
-    .alert-success { background: var(--accent-bg); color: var(--accent); border: 0.5px solid rgba(201,242,97,0.2); }
-    .alert-warning { background: var(--amber-bg);  color: var(--amber);  border: 0.5px solid rgba(240,168,74,0.2); }
-    .alert-danger  { background: var(--red-bg);    color: var(--red);    border: 0.5px solid rgba(255,107,107,0.2); }
- 
-    /* ── MODAL ── */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 200;
-      align-items: center; justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--bg2);
-      border: 0.5px solid var(--border2);
-      border-radius: var(--radius-lg);
-      padding: 1.75rem;
-      width: 100%; max-width: 460px;
-      margin: 1rem;
-    }
-    .modal-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 1.25rem;
-    }
-    .modal-title { font-size: 17px; font-weight: 500; }
-    .modal-close {
-      background: none; border: none; cursor: pointer;
-      color: var(--muted); font-size: 18px; padding: 4px;
-      border-radius: var(--radius); transition: color 0.1s;
-    }
-    .modal-close:hover { color: var(--text); }
-    .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.5rem; }
- 
-    /* ── TOAST ── */
-    .toast {
-      position: fixed; bottom: 1.5rem; right: 1.5rem;
-      background: var(--bg3); border: 0.5px solid var(--border2);
-      color: var(--text); padding: 10px 16px;
-      border-radius: var(--radius); font-size: 13px;
-      opacity: 0; transform: translateY(8px);
-      transition: all 0.2s; z-index: 300; pointer-events: none;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .toast.show { opacity: 1; transform: translateY(0); }
- 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-      .topnav { padding: 0 1rem; overflow-x: auto; gap: 0; }
-      .nav-brand-name { display: none; }
-      .nav-tab span.tab-label { display: none; }
-      .page { padding: 1.25rem 1rem; }
-      .assign-panel    { grid-template-columns: 1fr; }
-      .apertura-layout { grid-template-columns: 1fr; }
-      .cierre-layout   { grid-template-columns: 1fr; }
-      .form-grid       { grid-template-columns: 1fr; }
-      .form-grid.cols3 { grid-template-columns: 1fr 1fr; }
-      .stats-row       { grid-template-columns: repeat(2, 1fr); }
-      .denom-grid      { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 480px) {
-      .cajas-grid { grid-template-columns: 1fr 1fr; }
-      .cierre-stat-grid { grid-template-columns: 1fr 1fr; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Punto de Venta - Cultura Coffee Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+            color: #1f2937;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        .font-mono-custom { font-family: 'DM Mono', monospace; }
+
+        /* Menú lateral (Off-canvas) */
+        #menuLateral { 
+            position: fixed; 
+            top: 0; 
+            left: -100%;
+            width: 280px; 
+            height: 100vh; 
+            height: 100dvh;
+            background-color: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            transition: left 0.3s ease-in-out; 
+            z-index: 50;
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 4px 0 15px rgba(0,0,0,0.05);
+        }
+        #menuLateral.abierto { left: 0; }
+
+        #menuOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 40;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        #menuOverlay.abierto {
+            display: block;
+            opacity: 1;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px;}
+        ::-webkit-scrollbar-track { background: #f9fafb; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10B981; }
+
+        /* Estilo para los inputs de prefijo (ej. moneda) */
+        .input-prefix-wrap { position: relative; display: flex; align-items: center; }
+        .input-prefix-wrap span { position: absolute; left: 12px; color: #6b7280; font-family: 'DM Mono', monospace; font-size: 14px; pointer-events: none; }
+        .input-prefix-wrap input { padding-left: 28px; font-family: 'DM Mono', monospace; }
+    </style>
 </head>
-<body>
- 
-<!-- ── TOP NAV ── -->
-<nav class="topnav">
-  <div class="nav-brand">
-    <div class="nav-logo"><i class="ti ti-coffee" aria-hidden="true"></i></div>
-    <span class="nav-brand-name">CaféPOS</span>
-  </div>
-  <div class="nav-tabs">
-    <button class="nav-tab active" data-page="asignacion" onclick="goTo('asignacion', this)">
-      <div class="tab-dot"></div>
-      <i class="ti ti-layout-grid" aria-hidden="true"></i>
-      <span class="tab-label">Asignación de caja</span>
-    </button>
-    <button class="nav-tab" data-page="apertura" onclick="goTo('apertura', this)">
-      <div class="tab-dot"></div>
-      <i class="ti ti-lock-open" aria-hidden="true"></i>
-      <span class="tab-label">Apertura de caja</span>
-    </button>
-    <button class="nav-tab" data-page="cierre" onclick="goTo('cierre', this)">
-      <div class="tab-dot"></div>
-      <i class="ti ti-lock" aria-hidden="true"></i>
-      <span class="tab-label">Cierre de caja</span>
-    </button>
-  </div>
-  <div class="nav-right">
-    <span class="status-pill pill-open" id="nav-status">
-      <span class="pill-dot"></span> Caja abierta
-    </span>
-    <div class="nav-user">
-      <div class="nav-avatar">JM</div>
-      <span style="display:none;" id="nav-username">Juan M.</span>
-    </div>
-  </div>
-</nav>
- 
-<!-- ══════════════════════════════════════
-     PAGE 1 — ASIGNACIÓN DE CAJA
-══════════════════════════════════════ -->
-<div class="page active" id="page-asignacion">
-  <div class="page-header">
-    <div class="page-title">Asignación de caja</div>
-    <div class="page-sub">Selecciona una caja disponible y asígnala a un cajero</div>
-  </div>
- 
-  <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-label">Cajas totales</div>
-      <div class="stat-val teal">5</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Disponibles</div>
-      <div class="stat-val green">3</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Ocupadas</div>
-      <div class="stat-val amber">2</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Fuera de servicio</div>
-      <div class="stat-val red">0</div>
-    </div>
-  </div>
- 
-  <div class="section-label">Selecciona una caja</div>
-  <div class="cajas-grid" id="cajas-grid">
-    <!-- Generado por JS -->
-  </div>
- 
-  <div class="assign-panel">
-    <div class="card">
-      <div class="card-title">Datos del cajero</div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Cajero asignado</label>
-          <select id="a-cajero">
-            <option value="">— Seleccionar —</option>
-            <option>Juan Martínez</option>
-            <option>María López</option>
-            <option>Carlos Pérez</option>
-            <option>Ana Rodríguez</option>
-            <option>Luis Gómez</option>
-          </select>
+<body class="antialiased">
+
+    <header class="bg-white border-b border-gray-200 p-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+        <div class="flex items-center gap-3">
+            <button id="btnMenu" class="text-gray-500 hover:text-emerald-600 focus:outline-none transition-colors p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+            <div class="flex items-center gap-2">
+                <img src="nexora.jpg" alt="Nexora Logo" class="w-8 h-8 sm:w-9 sm:h-9 object-cover rounded-lg border border-gray-200 shadow-sm" onerror="this.onerror=null; this.src='https://placehold.co/100x100/10B981/ffffff?text=NX';"/>
+                <h2 class="text-lg font-bold tracking-wider text-gray-800">Nexora <span class="text-emerald-600 font-medium text-sm hidden sm:inline"> - Cultura Coffee Shop</span></h2>
+            </div>
         </div>
-        <div class="form-group">
-          <label>Turno</label>
-          <select id="a-turno">
-            <option>Matutino (6:00 – 14:00)</option>
-            <option>Vespertino (14:00 – 22:00)</option>
-            <option>Nocturno (22:00 – 6:00)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Fecha de asignación</label>
-          <input type="date" id="a-fecha" />
-        </div>
-        <div class="form-group">
-          <label>Hora de inicio</label>
-          <input type="time" id="a-hora" />
-        </div>
-        <div class="form-group full">
-          <label>Notas (opcional)</label>
-          <textarea id="a-notas" placeholder="Instrucciones especiales o notas del turno…"></textarea>
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="asignarCaja()">
-          <i class="ti ti-check" aria-hidden="true"></i> Confirmar asignación
+        
+        <button onclick="abrirCuenta()" class="w-9 h-9 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 font-bold hover:bg-emerald-600 hover:text-white transition-colors shadow-sm">
+            <span id="headerAvatar">U</span>
         </button>
-        <button class="btn btn-ghost" onclick="limpiarAsignacion()">Limpiar</button>
-      </div>
+    </header>
+
+    <div id="menuOverlay"></div>
+
+    <div id="menuLateral">
+        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+            <div class="flex flex-col">
+                <span class="text-xs text-gray-500 font-semibold tracking-widest uppercase">Menú Principal</span>
+            </div>
+            <button id="btnCerrarMenu" class="text-gray-400 hover:text-gray-800 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        </div>
+
+        <div class="flex-1 p-4 overflow-y-auto space-y-2">
+            <a href="Inventory.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg> Inventario
+            </a>
+            <a href="Pnt_venta.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg> Punto de Venta
+            </a>
+            <a href="pedido.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 15.75h3.75M18 1.5v21m-12-21v21m12-21H6m12 0a2.25 2.25 0 002.25 2.25V19.5A2.25 2.25 0 0118 21.75H6a2.25 2.25 0 01-2.25-2.25V3.75A2.25 2.25 0 016 1.5h12z" /></svg> Toma de Pedidos
+            </a>
+            <a href="dashboard_demo_cultura_coffee_shop.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg> Dashboard Principal
+            </a>
+        </div>
+
+        <div class="p-4 border-t border-gray-100 space-y-2 bg-gray-50/50">
+            <button onclick="abrirCuenta()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 bg-white hover:bg-emerald-50 hover:text-emerald-700 border border-gray-200 shadow-sm transition-all">
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                    <span class="font-medium text-sm">Mi Cuenta</span>
+                </div>
+            </button>
+            <button onclick="cerrarSesion()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" /></svg>
+                Salir del Sistema
+            </button>
+        </div>
     </div>
- 
-    <div class="card">
-      <div class="card-title">Asignaciones activas</div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Caja</th>
-              <th>Cajero</th>
-              <th>Turno</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody id="asignaciones-tbody">
-            <tr>
-              <td class="mono">Caja 01</td>
-              <td>María López</td>
-              <td>Matutino</td>
-              <td><span class="badge badge-green">Activa</span></td>
-            </tr>
-            <tr>
-              <td class="mono">Caja 03</td>
-              <td>Carlos Pérez</td>
-              <td>Vespertino</td>
-              <td><span class="badge badge-amber">Pendiente</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+
+    <main class="p-6 sm:p-8 max-w-6xl mx-auto space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-gray-200 pb-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-1 flex items-center gap-2">
+                    <i class="ti ti-cash text-emerald-600 text-3xl"></i> Punto de Venta
+                </h1>
+                <p class="text-sm text-gray-500">Gestión de cajas, aperturas y cortes</p>
+            </div>
+            
+            <div id="nav-status" class="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full border border-emerald-200 shadow-sm text-sm font-bold">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Caja abierta
+            </div>
+        </div>
+
+        <div class="flex gap-2 overflow-x-auto hide-scrollbar bg-white p-1.5 rounded-xl border border-gray-200 shadow-sm w-full md:w-fit">
+            <button class="nav-tab px-5 py-2.5 rounded-lg text-sm font-bold transition-all bg-emerald-50 text-emerald-700 flex items-center gap-2 whitespace-nowrap" data-page="asignacion" onclick="goTo('asignacion', this)">
+                <i class="ti ti-layout-grid text-lg"></i> Asignación de caja
+            </button>
+            <button class="nav-tab px-5 py-2.5 rounded-lg text-sm font-semibold transition-all text-gray-500 hover:text-gray-800 hover:bg-gray-50 flex items-center gap-2 whitespace-nowrap" data-page="apertura" onclick="goTo('apertura', this)">
+                <i class="ti ti-lock-open text-lg"></i> Apertura
+            </button>
+            <button class="nav-tab px-5 py-2.5 rounded-lg text-sm font-semibold transition-all text-gray-500 hover:text-gray-800 hover:bg-gray-50 flex items-center gap-2 whitespace-nowrap" data-page="cierre" onclick="goTo('cierre', this)">
+                <i class="ti ti-lock text-lg"></i> Cierre
+            </button>
+        </div>
+
+        <div class="pos-page block space-y-6 animate-fade-in" id="page-asignacion">
+            
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+                    <div class="text-gray-500 text-sm font-semibold mb-1">Cajas totales</div>
+                    <div class="text-3xl font-bold font-mono-custom text-blue-600">5</div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+                    <div class="text-gray-500 text-sm font-semibold mb-1">Disponibles</div>
+                    <div class="text-3xl font-bold font-mono-custom text-emerald-600">3</div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+                    <div class="text-gray-500 text-sm font-semibold mb-1">Ocupadas</div>
+                    <div class="text-3xl font-bold font-mono-custom text-amber-500">2</div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm bg-red-50/30">
+                    <div class="text-gray-500 text-sm font-semibold mb-1">Fuera de servicio</div>
+                    <div class="text-3xl font-bold font-mono-custom text-red-600">0</div>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Selecciona una caja</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4" id="cajas-grid">
+                    </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-b border-gray-100 pb-2">Datos del Cajero</h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-sm font-medium text-gray-700">Cajero asignado</label>
+                            <select id="a-cajero" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                                <option value="">— Seleccionar —</option>
+                                <option>Juan Martínez</option>
+                                <option>María López</option>
+                                <option>Carlos Pérez</option>
+                                <option>Ana Rodríguez</option>
+                                <option>Luis Gómez</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-sm font-medium text-gray-700">Turno</label>
+                            <select id="a-turno" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
+                                <option>Matutino (6:00 – 14:00)</option>
+                                <option>Vespertino (14:00 – 22:00)</option>
+                                <option>Nocturno (22:00 – 6:00)</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-sm font-medium text-gray-700">Fecha de asignación</label>
+                            <input type="date" id="a-fecha" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-sm font-medium text-gray-700">Hora de inicio</label>
+                            <input type="time" id="a-hora" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                        </div>
+                        <div class="space-y-1 sm:col-span-2">
+                            <label class="text-sm font-medium text-gray-700">Notas (opcional)</label>
+                            <textarea id="a-notas" placeholder="Instrucciones especiales..." class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[80px]"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 mt-6 pt-4 border-t border-gray-100">
+                        <button onclick="asignarCaja()" class="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2">
+                            <i class="ti ti-check text-lg"></i> Confirmar asignación
+                        </button>
+                        <button onclick="limpiarAsignacion()" class="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-50 transition-colors">Limpiar</button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+                    <div class="p-5 border-b border-gray-100 bg-gray-50/50">
+                        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Asignaciones Activas</h3>
+                    </div>
+                    <div class="overflow-x-auto flex-1">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-gray-500 uppercase bg-white border-b border-gray-100">
+                                <tr>
+                                    <th class="px-6 py-4 font-semibold">Caja</th>
+                                    <th class="px-6 py-4 font-semibold">Cajero</th>
+                                    <th class="px-6 py-4 font-semibold">Turno</th>
+                                    <th class="px-6 py-4 font-semibold">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="asignaciones-tbody" class="divide-y divide-gray-100">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-mono-custom font-bold text-gray-700">Caja 01</td>
+                                    <td class="px-6 py-4 font-medium text-gray-800">María López</td>
+                                    <td class="px-6 py-4 text-gray-600">Matutino</td>
+                                    <td class="px-6 py-4"><span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold">Activa</span></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-mono-custom font-bold text-gray-700">Caja 03</td>
+                                    <td class="px-6 py-4 font-medium text-gray-800">Carlos Pérez</td>
+                                    <td class="px-6 py-4 text-gray-600">Vespertino</td>
+                                    <td class="px-6 py-4"><span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold">Pendiente</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pos-page hidden space-y-6 animate-fade-in" id="page-apertura">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-b border-gray-100 pb-2">Información del Turno</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-gray-700">Caja asignada</label>
+                                <select id="ap-caja" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 bg-white">
+                                    <option>Caja 02</option>
+                                    <option>Caja 04</option>
+                                    <option>Caja 05</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-gray-700">Cajero</label>
+                                <input type="text" value="Juan Martínez" id="ap-cajero" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500" />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-gray-700">Turno</label>
+                                <select id="ap-turno" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 bg-white">
+                                    <option>Matutino</option>
+                                    <option>Vespertino</option>
+                                    <option>Nocturno</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-gray-700">Fecha apertura</label>
+                                <input type="date" id="ap-fecha" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500" />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-gray-700">Hora apertura</label>
+                                <input type="time" id="ap-hora" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500" />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-gray-700">Supervisor</label>
+                                <select id="ap-supervisor" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 bg-white">
+                                    <option>— Ninguno —</option>
+                                    <option>Gerente General</option>
+                                    <option>Supervisor Turno</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                        <div class="flex items-center justify-between border-b border-gray-100 pb-2 mb-4">
+                            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Conteo de fondo inicial</h3>
+                            <span class="text-xs text-gray-400">Ingresa billetes y monedas</span>
+                        </div>
+                        
+                        <h4 class="text-sm font-bold text-gray-700 mb-3">Billetes</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="billetes-grid"></div>
+                        
+                        <hr class="my-5 border-gray-100">
+                        
+                        <h4 class="text-sm font-bold text-gray-700 mb-3">Monedas</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="monedas-grid"></div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-1">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm sticky top-24">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">Resumen Apertura</h3>
+                        
+                        <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2 mb-5">
+                            <div class="flex justify-between text-sm"><span class="text-gray-500">Caja</span><span class="font-mono-custom font-bold text-gray-700" id="res-caja">Caja 02</span></div>
+                            <div class="flex justify-between text-sm"><span class="text-gray-500">Cajero</span><span class="font-medium text-gray-800" id="res-cajero">Juan Martínez</span></div>
+                            <div class="flex justify-between text-sm"><span class="text-gray-500">Turno</span><span class="font-medium text-gray-800" id="res-turno">Matutino</span></div>
+                            <div class="flex justify-between text-sm"><span class="text-gray-500">Fecha</span><span class="font-mono-custom text-gray-700" id="res-fecha">—</span></div>
+                            <div class="flex justify-between text-sm"><span class="text-gray-500">Hora</span><span class="font-mono-custom text-gray-700" id="res-hora">—</span></div>
+                        </div>
+
+                        <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Desglose fondo</h4>
+                        <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2 mb-5" id="desglose-wrap">
+                            <div class="text-xs text-gray-400 text-center py-2">Ingresa las denominaciones</div>
+                        </div>
+
+                        <div class="flex justify-between items-center py-3 border-t border-b border-gray-100 mb-5">
+                            <span class="font-bold text-gray-800">Total fondo inicial</span>
+                            <span class="text-xl font-bold font-mono-custom text-emerald-600" id="total-fondo">Q 0.00</span>
+                        </div>
+
+                        <div class="space-y-1 mb-6">
+                            <label class="text-sm font-medium text-gray-700">Observaciones</label>
+                            <textarea id="ap-obs" placeholder="Estado de la caja..." class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 min-h-[60px]"></textarea>
+                        </div>
+
+                        <button onclick="abrirCaja()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl text-sm font-bold transition-colors shadow-sm flex items-center justify-center gap-2 mb-3">
+                            <i class="ti ti-lock-open text-lg"></i> Abrir caja
+                        </button>
+                        <button onclick="imprimirApertura()" class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2">
+                            <i class="ti ti-printer text-lg"></i> Imprimir comprobante
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pos-page hidden space-y-6 animate-fade-in" id="page-cierre">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <div class="lg:col-span-2 space-y-6">
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+                            <div class="text-gray-500 text-xs font-bold uppercase mb-1">Ventas Turno</div>
+                            <div class="text-xl font-bold font-mono-custom text-emerald-600">Q 4,287.50</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+                            <div class="text-gray-500 text-xs font-bold uppercase mb-1">Transacciones</div>
+                            <div class="text-xl font-bold font-mono-custom text-blue-600">147</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+                            <div class="text-gray-500 text-xs font-bold uppercase mb-1">Fondo inicial</div>
+                            <div class="text-xl font-bold font-mono-custom text-gray-700">Q 500.00</div>
+                        </div>
+                        <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200 shadow-sm">
+                            <div class="text-emerald-800 text-xs font-bold uppercase mb-1">Total Esperado</div>
+                            <div class="text-xl font-bold font-mono-custom text-emerald-700">Q 4,787.50</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                        <div class="flex items-center justify-between border-b border-gray-100 pb-2 mb-4">
+                            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Conteo final — Arqueo</h3>
+                            <span class="text-xs text-gray-400">Dinero en caja</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="cierre-billetes-grid"></div>
+                        <hr class="my-4 border-gray-100">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="cierre-monedas-grid"></div>
+
+                        <div class="flex items-center justify-between mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                            <span class="font-bold text-emerald-800">Total Físico Contado</span>
+                            <span class="text-2xl font-bold font-mono-custom text-emerald-700" id="total-contado">Q 0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+                        <div class="p-5 border-b border-gray-100 bg-gray-50/50">
+                            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Desglose por Forma de Pago</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="text-xs text-gray-500 uppercase bg-white border-b border-gray-100">
+                                    <tr>
+                                        <th class="px-6 py-4 font-semibold">Forma</th>
+                                        <th class="px-6 py-4 font-semibold">Tx</th>
+                                        <th class="px-6 py-4 font-semibold">Sistema</th>
+                                        <th class="px-6 py-4 font-semibold">Físico</th>
+                                        <th class="px-6 py-4 font-semibold">Diff</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 font-medium text-gray-800">Efectivo</td>
+                                        <td class="px-6 py-4 font-mono-custom">98</td>
+                                        <td class="px-6 py-4 font-mono-custom font-bold text-gray-700">Q 2,940.00</td>
+                                        <td class="px-6 py-4">
+                                            <div class="input-prefix-wrap w-28">
+                                                <span>Q</span>
+                                                <input type="number" value="2940.00" class="w-full py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 bg-white" />
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4"><span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs font-mono-custom font-bold">Q 0.00</span></td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 font-medium text-gray-800">Tarjeta</td>
+                                        <td class="px-6 py-4 font-mono-custom">42</td>
+                                        <td class="px-6 py-4 font-mono-custom font-bold text-gray-700">Q 1,095.50</td>
+                                        <td class="px-6 py-4">
+                                            <div class="input-prefix-wrap w-28">
+                                                <span>Q</span>
+                                                <input type="number" value="1095.50" class="w-full py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 bg-white" />
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4"><span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs font-mono-custom font-bold">Q 0.00</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-1">
+                    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm sticky top-24">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">Resumen Cierre</h3>
+                        
+                        <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2 mb-5">
+                            <div class="flex justify-between text-sm"><span class="text-gray-500">Caja</span><span class="font-mono-custom font-bold text-gray-700">Caja 02</span></div>
+                            <div class="flex justify-between text-sm"><span class="text-gray-500">Cajero</span><span class="font-medium text-gray-800">Juan Martínez</span></div>
+                            <div class="flex justify-between text-sm"><span class="text-gray-500">Apertura</span><span class="font-mono-custom text-gray-700">08:00 a.m.</span></div>
+                            <div class="flex justify-between text-sm"><span class="text-gray-500">Cierre</span><span class="font-mono-custom text-gray-700" id="hora-cierre">—</span></div>
+                        </div>
+
+                        <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Diferencias</h4>
+                        <div class="space-y-2 mb-5 border-b border-gray-100 pb-4">
+                            <div class="flex justify-between items-center bg-emerald-50 px-3 py-2 rounded-lg">
+                                <span class="text-sm font-medium text-emerald-800">Efectivo</span>
+                                <span class="font-mono-custom font-bold text-emerald-700">Q 0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center bg-emerald-50 px-3 py-2 rounded-lg">
+                                <span class="text-sm font-medium text-emerald-800">Tarjeta</span>
+                                <span class="font-mono-custom font-bold text-emerald-700">Q 0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-gray-600">Total Contado</span>
+                            <span class="text-lg font-bold font-mono-custom text-gray-800" id="res-total-contado">Q 0.00</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+                            <span class="font-bold text-gray-600">Diferencia Final</span>
+                            <span class="text-xl font-bold font-mono-custom text-emerald-600" id="res-diferencia">Q 0.00</span>
+                        </div>
+
+                        <div class="space-y-1 mb-6">
+                            <label class="text-sm font-medium text-gray-700">Observaciones</label>
+                            <textarea id="c-obs" placeholder="Faltantes, sobrantes..." class="w-full px-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 min-h-[60px]"></textarea>
+                        </div>
+
+                        <button onclick="cerrarCaja()" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl text-sm font-bold transition-colors shadow-sm flex items-center justify-center gap-2 mb-3">
+                            <i class="ti ti-lock text-lg"></i> Confirmar Cierre
+                        </button>
+                        <button onclick="imprimirCierre()" class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2">
+                            <i class="ti ti-printer text-lg"></i> Imprimir Corte
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="modalCuenta" class="fixed inset-0 bg-black/40 z-[60] flex justify-center items-center p-4 hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm">
+        <div class="bg-white border border-gray-200 rounded-3xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300" id="modalCuentaContent">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-lg font-bold text-gray-800">Perfil de Usuario</h3>
+                <button onclick="cerrarCuenta()" class="text-gray-400 hover:text-gray-800 p-1"><i class="ti ti-x text-xl"></i></button>
+            </div>
+            <div class="flex flex-col items-center py-6 border-y border-gray-100 mb-6">
+                <div class="w-20 h-20 rounded-full bg-emerald-50 border-2 border-emerald-500 flex items-center justify-center text-emerald-600 text-3xl font-bold mb-3 shadow-[0_0_15px_rgba(16,185,129,0.15)]"><span id="modalAvatarInitials">U</span></div>
+                <h4 class="text-xl font-bold text-gray-800" id="modalUsername">Cargando...</h4>
+                <p class="text-emerald-600 text-sm font-medium mt-1">Acceso Autorizado</p>
+                <span class="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full mt-3 font-medium border border-gray-200">Cajero Activo</span>
+            </div>
+            <button onclick="cerrarSesion()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 px-4 rounded-xl border border-red-200 flex items-center justify-center gap-2"><i class="ti ti-logout text-lg"></i> Cerrar Sesión</button>
+        </div>
     </div>
-  </div>
-</div>
- 
-<!-- ══════════════════════════════════════
-     PAGE 2 — APERTURA DE CAJA
-══════════════════════════════════════ -->
-<div class="page" id="page-apertura">
-  <div class="page-header">
-    <div class="page-title">Apertura de caja</div>
-    <div class="page-sub">Registra el fondo inicial y abre el turno</div>
-  </div>
- 
-  <div class="apertura-layout">
-    <!-- Izquierda -->
-    <div>
-      <div class="card" style="margin-bottom:1.25rem;">
-        <div class="card-title">Información del turno</div>
-        <div class="form-grid cols3">
-          <div class="form-group">
-            <label>Caja asignada</label>
-            <select id="ap-caja">
-              <option>Caja 02</option>
-              <option>Caja 04</option>
-              <option>Caja 05</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Cajero</label>
-            <input type="text" value="Juan Martínez" id="ap-cajero" />
-          </div>
-          <div class="form-group">
-            <label>Turno</label>
-            <select id="ap-turno">
-              <option>Matutino</option>
-              <option>Vespertino</option>
-              <option>Nocturno</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Fecha apertura</label>
-            <input type="date" id="ap-fecha" />
-          </div>
-          <div class="form-group">
-            <label>Hora apertura</label>
-            <input type="time" id="ap-hora" />
-          </div>
-          <div class="form-group">
-            <label>Supervisor</label>
-            <select id="ap-supervisor">
-              <option>— Ninguno —</option>
-              <option>Gerente General</option>
-              <option>Supervisor Turno</option>
-            </select>
-          </div>
+
+    <div class="fixed inset-0 bg-black/40 z-[60] flex justify-center items-center p-4 hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm" id="modal-cierre" onclick="handleModalClick(event,'modal-cierre')">
+        <div class="bg-white border border-gray-200 rounded-3xl p-6 w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300 modal-content-anim">
+            <div class="flex justify-between items-center mb-5 border-b border-gray-100 pb-4">
+                <h3 class="text-xl font-bold text-gray-800">¿Confirmar cierre?</h3>
+                <button onclick="closeModal('modal-cierre')" class="text-gray-400 hover:text-gray-800 p-1"><i class="ti ti-x text-xl"></i></button>
+            </div>
+            <div class="flex items-start gap-3 bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl text-sm mb-5">
+                <i class="ti ti-alert-triangle text-xl mt-0.5"></i>
+                <p>Esta acción cerrará el turno actual. Asegúrate de haber completado el arqueo correctamente.</p>
+            </div>
+            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2 mb-6">
+                <div class="flex justify-between text-sm"><span class="text-gray-500">Ventas Turno</span><span class="font-mono-custom font-bold text-gray-700">Q 4,287.50</span></div>
+                <div class="flex justify-between text-sm"><span class="text-gray-500">Total Contado</span><span class="font-mono-custom font-bold text-gray-700" id="mc-contado">Q 0.00</span></div>
+                <div class="flex justify-between text-sm border-t border-gray-200 pt-2 mt-2"><span class="text-gray-800 font-bold">Diferencia</span><span class="font-mono-custom font-bold text-emerald-600" id="mc-diff">Q 0.00</span></div>
+            </div>
+            <div class="flex gap-3 justify-end">
+                <button onclick="closeModal('modal-cierre')" class="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-50">Cancelar</button>
+                <button onclick="confirmarCierre()" class="px-5 py-2.5 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 shadow-sm flex items-center gap-2"><i class="ti ti-lock"></i> Sí, cerrar caja</button>
+            </div>
         </div>
-      </div>
- 
-      <div class="card">
-        <div class="card-title">Conteo de fondo inicial</div>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:1rem;">Ingresa la cantidad de billetes y monedas para calcular el fondo inicial</p>
- 
-        <div style="margin-bottom:0.75rem;">
-          <div class="section-label">Billetes</div>
-          <div class="denom-grid" id="billetes-grid"></div>
-        </div>
- 
-        <hr class="divider" style="margin:1rem 0;" />
- 
-        <div>
-          <div class="section-label">Monedas</div>
-          <div class="denom-grid" id="monedas-grid"></div>
-        </div>
-      </div>
     </div>
- 
-    <!-- Derecha: resumen -->
-    <div>
-      <div class="card" style="position:sticky;top:72px;">
-        <div class="card-title">Resumen apertura</div>
- 
-        <div class="resumen-card">
-          <div class="resumen-row"><span class="label">Caja</span><span class="val mono" id="res-caja">Caja 02</span></div>
-          <div class="resumen-row"><span class="label">Cajero</span><span class="val" id="res-cajero">Juan Martínez</span></div>
-          <div class="resumen-row"><span class="label">Turno</span><span class="val" id="res-turno">Matutino</span></div>
-          <div class="resumen-row"><span class="label">Fecha</span><span class="val mono" id="res-fecha">—</span></div>
-          <div class="resumen-row"><span class="label">Hora</span><span class="val mono" id="res-hora">—</span></div>
+
+    <div class="fixed inset-0 bg-black/40 z-[60] flex justify-center items-center p-4 hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm" id="modal-apertura-ok" onclick="handleModalClick(event,'modal-apertura-ok')">
+        <div class="bg-white border border-gray-200 rounded-3xl p-6 w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300 modal-content-anim">
+            <div class="flex justify-between items-center mb-5 border-b border-gray-100 pb-4">
+                <h3 class="text-xl font-bold text-gray-800">Caja Abierta</h3>
+                <button onclick="closeModal('modal-apertura-ok')" class="text-gray-400 hover:text-gray-800 p-1"><i class="ti ti-x text-xl"></i></button>
+            </div>
+            <div class="flex items-start gap-3 bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl text-sm mb-5">
+                <i class="ti ti-circle-check text-xl mt-0.5 text-emerald-600"></i>
+                <p>El turno ha sido iniciado exitosamente. Ya puedes registrar ventas.</p>
+            </div>
+            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2 mb-6" id="modal-apertura-resumen-content">
+                </div>
+            <div class="flex justify-end">
+                <button onclick="closeModal('modal-apertura-ok')" class="w-full px-5 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 shadow-sm">Entendido</button>
+            </div>
         </div>
- 
-        <div class="section-label">Desglose fondo</div>
-        <div class="resumen-card" id="desglose-wrap">
-          <div style="font-size:12px;color:var(--muted);text-align:center;padding:0.5rem 0;">Ingresa las denominaciones</div>
-        </div>
- 
-        <div class="resumen-total">
-          <span>Total fondo inicial</span>
-          <span class="val" id="total-fondo">Q 0.00</span>
-        </div>
- 
-        <hr class="divider" />
- 
-        <div class="form-group" style="margin-bottom:1rem;">
-          <label>Observaciones de apertura</label>
-          <textarea id="ap-obs" placeholder="Estado de la caja, incidencias previas…" style="min-height:60px;"></textarea>
-        </div>
- 
-        <button class="btn btn-primary btn-lg btn-full" onclick="abrirCaja()">
-          <i class="ti ti-lock-open" aria-hidden="true"></i> Abrir caja
-        </button>
-        <button class="btn btn-ghost btn-full" style="margin-top:8px;" onclick="imprimirApertura()">
-          <i class="ti ti-printer" aria-hidden="true"></i> Imprimir comprobante
-        </button>
-      </div>
     </div>
-  </div>
-</div>
- 
-<!-- ══════════════════════════════════════
-     PAGE 3 — CIERRE DE CAJA
-══════════════════════════════════════ -->
-<div class="page" id="page-cierre">
-  <div class="page-header">
-    <div class="page-title">Cierre de caja</div>
-    <div class="page-sub">Verifica el arqueo y cierra el turno activo</div>
-  </div>
- 
-  <div class="cierre-layout">
-    <!-- Izquierda -->
-    <div>
-      <div class="cierre-stat-grid">
-        <div class="cierre-stat">
-          <div class="stat-label">Ventas del turno</div>
-          <div class="stat-val green" style="font-size:22px;">Q 4,287.50</div>
-        </div>
-        <div class="cierre-stat">
-          <div class="stat-label">Transacciones</div>
-          <div class="stat-val teal" style="font-size:22px;">147</div>
-        </div>
-        <div class="cierre-stat">
-          <div class="stat-label">Fondo inicial</div>
-          <div class="stat-val" style="font-size:22px;">Q 500.00</div>
-        </div>
-        <div class="cierre-stat">
-          <div class="stat-label">Total esperado</div>
-          <div class="stat-val amber" style="font-size:22px;">Q 4,787.50</div>
-        </div>
-      </div>
- 
-      <div class="card" style="margin-bottom:1.25rem;">
-        <div class="card-title">Conteo final — arqueo</div>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:1rem;">Cuenta físicamente el dinero en caja y registra las cantidades</p>
-        <div class="denom-grid" id="cierre-billetes-grid"></div>
-        <hr class="divider" style="margin:1rem 0;" />
-        <div class="denom-grid" id="cierre-monedas-grid"></div>
- 
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:1.25rem;padding:12px 14px;background:var(--bg3);border-radius:var(--radius);">
-          <span style="font-size:14px;font-weight:500;">Total contado</span>
-          <span style="font-family:var(--mono);font-size:18px;font-weight:500;color:var(--accent);" id="total-contado">Q 0.00</span>
-        </div>
-      </div>
- 
-      <div class="card">
-        <div class="card-title">Desglose por forma de pago</div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Forma de pago</th><th>Transacciones</th><th>Monto sistema</th><th>Monto físico</th><th>Diferencia</th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Efectivo</td><td class="mono">98</td>
-                <td class="mono">Q 2,940.00</td>
-                <td><div class="input-prefix" style="max-width:110px;"><span>Q</span><input type="number" value="2940.00" oninput="recalcDiff(this)" /></div></td>
-                <td class="mono" id="diff-efectivo"><span class="badge badge-green">Q 0.00</span></td>
-              </tr>
-              <tr>
-                <td>Tarjeta</td><td class="mono">42</td>
-                <td class="mono">Q 1,095.50</td>
-                <td><div class="input-prefix" style="max-width:110px;"><span>Q</span><input type="number" value="1095.50" oninput="recalcDiff(this)" /></div></td>
-                <td class="mono" id="diff-tarjeta"><span class="badge badge-green">Q 0.00</span></td>
-              </tr>
-              <tr>
-                <td>Transferencia</td><td class="mono">7</td>
-                <td class="mono">Q 252.00</td>
-                <td><div class="input-prefix" style="max-width:110px;"><span>Q</span><input type="number" value="252.00" oninput="recalcDiff(this)" /></div></td>
-                <td class="mono" id="diff-transf"><span class="badge badge-green">Q 0.00</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+
+    <div id="toast" class="fixed bottom-5 right-5 bg-gray-800 text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium transform translate-y-10 opacity-0 transition-all duration-300 z-[70] pointer-events-none flex items-center gap-2">
+        <i class="ti ti-info-circle text-emerald-400 text-lg" id="toast-icon"></i> <span id="toast-msg"></span>
     </div>
- 
-    <!-- Derecha: resumen cierre -->
-    <div>
-      <div class="card" style="position:sticky;top:72px;">
-        <div class="card-title">Resumen de cierre</div>
- 
-        <div class="resumen-card">
-          <div class="resumen-row"><span class="label">Caja</span><span class="val mono">Caja 02</span></div>
-          <div class="resumen-row"><span class="label">Cajero</span><span class="val">Juan Martínez</span></div>
-          <div class="resumen-row"><span class="label">Apertura</span><span class="val mono">08:00 a.m.</span></div>
-          <div class="resumen-row"><span class="label">Cierre</span><span class="val mono" id="hora-cierre">—</span></div>
-          <div class="resumen-row"><span class="label">Duración</span><span class="val mono">—</span></div>
-        </div>
- 
-        <div class="section-label">Diferencias detectadas</div>
-        <div id="diffs-panel">
-          <div class="diff-row diff-ok">
-            <span>Efectivo</span>
-            <span style="font-family:var(--mono);font-weight:500;color:var(--accent);">Q 0.00</span>
-          </div>
-          <div class="diff-row diff-ok">
-            <span>Tarjeta</span>
-            <span style="font-family:var(--mono);font-weight:500;color:var(--accent);">Q 0.00</span>
-          </div>
-          <div class="diff-row diff-ok">
-            <span>Transferencia</span>
-            <span style="font-family:var(--mono);font-weight:500;color:var(--accent);">Q 0.00</span>
-          </div>
-        </div>
- 
-        <hr class="divider" />
- 
-        <div class="resumen-total" style="margin-bottom:1rem;">
-          <span>Total en caja</span>
-          <span class="val" id="res-total-contado">Q 0.00</span>
-        </div>
-        <div class="resumen-total" style="margin-bottom:1.25rem;">
-          <span>Diferencia total</span>
-          <span class="val" id="res-diferencia" style="color:var(--accent);">Q 0.00</span>
-        </div>
- 
-        <div class="form-group" style="margin-bottom:1rem;">
-          <label>Observaciones de cierre</label>
-          <textarea id="c-obs" placeholder="Incidencias, faltantes, sobrantes…" style="min-height:60px;"></textarea>
-        </div>
- 
-        <button class="btn btn-danger btn-lg btn-full" onclick="cerrarCaja()">
-          <i class="ti ti-lock" aria-hidden="true"></i> Cerrar caja
-        </button>
-        <button class="btn btn-ghost btn-full" style="margin-top:8px;" onclick="imprimirCierre()">
-          <i class="ti ti-printer" aria-hidden="true"></i> Imprimir corte
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
- 
-<!-- Modal confirmación cierre -->
-<div class="modal-overlay" id="modal-cierre" onclick="handleModalClick(event,'modal-cierre')">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">¿Confirmar cierre de caja?</div>
-      <button class="modal-close" onclick="closeModal('modal-cierre')"><i class="ti ti-x"></i></button>
-    </div>
-    <div class="alert alert-warning">
-      <i class="ti ti-alert-triangle" aria-hidden="true"></i>
-      Esta acción cerrará el turno actual. Asegúrate de haber completado el arqueo correctamente.
-    </div>
-    <div class="resumen-card">
-      <div class="resumen-row"><span class="label">Ventas del turno</span><span class="val mono">Q 4,287.50</span></div>
-      <div class="resumen-row"><span class="label">Total contado</span><span class="val mono" id="mc-contado">Q 0.00</span></div>
-      <div class="resumen-row"><span class="label">Diferencia</span><span class="val mono" id="mc-diff">Q 0.00</span></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('modal-cierre')">Cancelar</button>
-      <button class="btn btn-danger" onclick="confirmarCierre()"><i class="ti ti-lock" aria-hidden="true"></i> Sí, cerrar caja</button>
-    </div>
-  </div>
-</div>
- 
-<!-- Modal éxito apertura -->
-<div class="modal-overlay" id="modal-apertura-ok" onclick="handleModalClick(event,'modal-apertura-ok')">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Caja abierta exitosamente</div>
-      <button class="modal-close" onclick="closeModal('modal-apertura-ok')"><i class="ti ti-x"></i></button>
-    </div>
-    <div class="alert alert-success">
-      <i class="ti ti-circle-check" aria-hidden="true"></i>
-      El turno ha sido iniciado. Ya puedes comenzar a registrar ventas.
-    </div>
-    <div class="resumen-card" id="modal-apertura-resumen"></div>
-    <div class="modal-footer">
-      <button class="btn btn-primary" onclick="closeModal('modal-apertura-ok')">Entendido</button>
-    </div>
-  </div>
-</div>
- 
-<!-- Toast -->
-<div class="toast" id="toast"><i class="ti ti-check" aria-hidden="true"></i> <span id="toast-msg"></span></div>
- 
-<script>
-  // ── DATA ──
-  const CAJAS = [
-    { id: 1, nombre: "Caja 01", ubicacion: "Entrada principal",  estado: "ocupada"    },
-    { id: 2, nombre: "Caja 02", ubicacion: "Mostrador central",  estado: "disponible" },
-    { id: 3, nombre: "Caja 03", ubicacion: "Área de mesas",      estado: "ocupada"    },
-    { id: 4, nombre: "Caja 04", ubicacion: "Drive-through",      estado: "disponible" },
-    { id: 5, nombre: "Caja 05", ubicacion: "Terraza",            estado: "disponible" },
-  ];
- 
-  const BILLETES  = [200, 100, 50, 20, 10, 5, 1];
-  const MONEDAS   = [0.50, 0.25, 0.10, 0.05];
-  const DENOM_ALL = [...BILLETES, ...MONEDAS];
- 
-  let selectedCaja = null;
-  let cajaAbierta = true;
- 
-  // ── NAVEGACIÓN ──
-  function goTo(page, btn) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('page-' + page).classList.add('active');
-    btn.classList.add('active');
-  }
- 
-  // ── CAJAS GRID ──
-  function renderCajas() {
-    const grid = document.getElementById('cajas-grid');
-    grid.innerHTML = CAJAS.map(c => `
-      <div class="caja-card ${c.estado === 'ocupada' ? 'occupied' : ''} ${selectedCaja === c.id ? 'selected' : ''}"
-           onclick="${c.estado !== 'ocupada' ? `selectCaja(${c.id})` : ''}">
-        <div class="caja-card-top">
-          <div class="caja-icon"><i class="ti ti-device-desktop" aria-hidden="true"></i></div>
-          <span class="badge ${c.estado === 'disponible' ? 'badge-green' : c.estado === 'ocupada' ? 'badge-amber' : 'badge-red'}">
-            ${c.estado === 'disponible' ? 'Disponible' : c.estado === 'ocupada' ? 'Ocupada' : 'Fuera de servicio'}
-          </span>
-        </div>
-        <div class="caja-num">${c.nombre}</div>
-        <div class="caja-loc">${c.ubicacion}</div>
-        <div class="check-icon"><i class="ti ti-check" aria-hidden="true"></i></div>
-      </div>
-    `).join('');
-  }
- 
-  function selectCaja(id) {
-    selectedCaja = id;
-    renderCajas();
-    const caja = CAJAS.find(c => c.id === id);
-    showToast(`${caja.nombre} seleccionada`);
-  }
- 
-  // ── DENOMINACIONES ──
-  function buildDenomGrid(containerId, denomsArr) {
-    const el = document.getElementById(containerId);
-    el.innerHTML = denomsArr.map(d => {
-      const key = 'denom_' + containerId + '_' + (d + '').replace('.', '_');
-      const label = d >= 1 ? `Q ${d}` : `Q ${d.toFixed(2)}`;
-      return `<div class="denom-row">
-        <span class="denom-label">${label}</span>
-        <input type="number" min="0" value="0" id="${key}" oninput="recalcFondo()" style="width:50px;" />
-        <span class="denom-subtotal" id="${key}_sub">Q 0.00</span>
-      </div>`;
-    }).join('');
-  }
- 
-  function recalcFondo() {
-    let total = 0;
-    const desgloseLines = [];
-    DENOM_ALL.forEach(d => {
-      const bKey = 'denom_billetes-grid_'  + (d + '').replace('.', '_');
-      const mKey = 'denom_monedas-grid_'   + (d + '').replace('.', '_');
-      const key = document.getElementById(bKey) ? bKey : document.getElementById(mKey) ? mKey : null;
-      if (!key) return;
-      const qty = parseInt(document.getElementById(key).value) || 0;
-      const sub = qty * d;
-      total += sub;
-      const subEl = document.getElementById(key + '_sub');
-      if (subEl) subEl.textContent = `Q ${sub.toFixed(2)}`;
-      if (qty > 0) {
-        const label = d >= 1 ? `Q ${d}` : `Q ${d.toFixed(2)}`;
-        desgloseLines.push(`<div class="resumen-row"><span class="label">${qty}× ${label}</span><span class="val mono">Q ${sub.toFixed(2)}</span></div>`);
-      }
-    });
-    document.getElementById('total-fondo').textContent = `Q ${total.toFixed(2)}`;
-    const dw = document.getElementById('desglose-wrap');
-    dw.innerHTML = desgloseLines.length
-      ? desgloseLines.join('')
-      : '<div style="font-size:12px;color:var(--muted);text-align:center;padding:0.5rem 0;">Ingresa las denominaciones</div>';
- 
-    // sync resumen fields
-    const cajaSel = document.getElementById('ap-caja');
-    if (cajaSel) document.getElementById('res-caja').textContent   = cajaSel.value;
-    const cajeroEl = document.getElementById('ap-cajero');
-    if (cajeroEl) document.getElementById('res-cajero').textContent = cajeroEl.value;
-    const turnoEl = document.getElementById('ap-turno');
-    if (turnoEl) document.getElementById('res-turno').textContent  = turnoEl.value;
-    const fechaEl = document.getElementById('ap-fecha');
-    if (fechaEl) document.getElementById('res-fecha').textContent  = fechaEl.value || '—';
-    const horaEl = document.getElementById('ap-hora');
-    if (horaEl) document.getElementById('res-hora').textContent   = horaEl.value || '—';
-  }
- 
-  // Cierre
-  function buildCierreDenomGrids() {
-    const bGrid = document.getElementById('cierre-billetes-grid');
-    const mGrid = document.getElementById('cierre-monedas-grid');
-    bGrid.innerHTML = BILLETES.map(d => {
-      const key = 'c_' + (d + '').replace('.', '_');
-      return `<div class="denom-row">
-        <span class="denom-label">Q ${d}</span>
-        <input type="number" min="0" value="0" id="${key}" oninput="recalcContado()" style="width:50px;" />
-        <span class="denom-subtotal" id="${key}_sub">Q 0.00</span>
-      </div>`;
-    }).join('');
-    mGrid.innerHTML = MONEDAS.map(d => {
-      const key = 'c_' + (d + '').replace('.', '_');
-      return `<div class="denom-row">
-        <span class="denom-label">Q ${d.toFixed(2)}</span>
-        <input type="number" min="0" value="0" id="${key}" oninput="recalcContado()" style="width:50px;" />
-        <span class="denom-subtotal" id="${key}_sub">Q 0.00</span>
-      </div>`;
-    }).join('');
-  }
- 
-  function recalcContado() {
-    let total = 0;
-    [...BILLETES, ...MONEDAS].forEach(d => {
-      const key = 'c_' + (d + '').replace('.', '_');
-      const el = document.getElementById(key);
-      if (!el) return;
-      const qty = parseInt(el.value) || 0;
-      const sub = qty * d;
-      total += sub;
-      const s = document.getElementById(key + '_sub');
-      if (s) s.textContent = `Q ${sub.toFixed(2)}`;
-    });
-    document.getElementById('total-contado').textContent   = `Q ${total.toFixed(2)}`;
-    document.getElementById('res-total-contado').textContent = `Q ${total.toFixed(2)}`;
-    const esperado = 4787.50;
-    const diff = total - esperado;
-    const diffEl = document.getElementById('res-diferencia');
-    diffEl.textContent = `Q ${diff.toFixed(2)}`;
-    diffEl.style.color = diff === 0 ? 'var(--accent)' : diff > 0 ? 'var(--amber)' : 'var(--red)';
-    document.getElementById('mc-contado').textContent = `Q ${total.toFixed(2)}`;
-    document.getElementById('mc-diff').textContent    = `Q ${diff.toFixed(2)}`;
-    document.getElementById('hora-cierre').textContent = new Date().toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' });
-  }
- 
-  function recalcDiff(input) { /* visual only for table diffs */ }
- 
-  // ── ASIGNACIÓN ──
-  function asignarCaja() {
-    const cajero = document.getElementById('a-cajero').value;
-    const turno  = document.getElementById('a-turno').value.split(' ')[0];
-    if (!selectedCaja) { showToast('Selecciona una caja primero'); return; }
-    if (!cajero)       { showToast('Selecciona un cajero'); return; }
-    const caja = CAJAS.find(c => c.id === selectedCaja);
-    const tbody = document.getElementById('asignaciones-tbody');
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="mono">${caja.nombre}</td><td>${cajero}</td><td>${turno}</td><td><span class="badge badge-green">Activa</span></td>`;
-    tbody.appendChild(tr);
-    caja.estado = 'ocupada';
-    selectedCaja = null;
-    renderCajas();
-    limpiarAsignacion();
-    showToast(`${caja.nombre} asignada a ${cajero}`);
-  }
- 
-  function limpiarAsignacion() {
-    document.getElementById('a-cajero').value = '';
-    document.getElementById('a-notas').value  = '';
-    selectedCaja = null;
-    renderCajas();
-  }
- 
-  // ── APERTURA ──
-  function abrirCaja() {
-    const fondo = document.getElementById('total-fondo').textContent;
-    const caja  = document.getElementById('ap-caja').value;
-    document.getElementById('modal-apertura-resumen').innerHTML = `
-      <div class="resumen-row"><span class="label">Caja</span><span class="val mono">${caja}</span></div>
-      <div class="resumen-row"><span class="label">Fondo inicial</span><span class="val mono" style="color:var(--accent);">${fondo}</span></div>
-      <div class="resumen-row"><span class="label">Hora apertura</span><span class="val mono">${new Date().toLocaleTimeString('es-GT',{hour:'2-digit',minute:'2-digit'})}</span></div>
-    `;
-    document.getElementById('modal-apertura-ok').classList.add('open');
-    updateNavStatus(true);
-  }
- 
-  function imprimirApertura() { showToast('Enviando a impresora…'); }
- 
-  // ── CIERRE ──
-  function cerrarCaja() {
-    document.getElementById('modal-cierre').classList.add('open');
-  }
- 
-  function confirmarCierre() {
-    closeModal('modal-cierre');
-    updateNavStatus(false);
-    showToast('Caja cerrada. Corte generado.');
-  }
- 
-  function imprimirCierre() { showToast('Imprimiendo corte de caja…'); }
- 
-  function updateNavStatus(open) {
-    const el = document.getElementById('nav-status');
-    el.className = 'status-pill ' + (open ? 'pill-open' : 'pill-closed');
-    el.innerHTML = `<span class="pill-dot"></span> ${open ? 'Caja abierta' : 'Caja cerrada'}`;
-    cajaAbierta = open;
-  }
- 
-  // ── MODAL ──
-  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-  function handleModalClick(e, id) { if (e.target.id === id) closeModal(id); }
- 
-  // ── TOAST ──
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    document.getElementById('toast-msg').textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2800);
-  }
- 
-  // ── INIT ──
-  const today = new Date().toISOString().split('T')[0];
-  const nowTime = new Date().toTimeString().slice(0, 5);
-  document.querySelectorAll('input[type=date]').forEach(el => el.value = today);
-  document.querySelectorAll('input[type=time]').forEach(el => el.value = nowTime);
- 
-  renderCajas();
-  buildDenomGrid('billetes-grid', BILLETES);
-  buildDenomGrid('monedas-grid', MONEDAS);
-  buildCierreDenomGrids();
-</script>
+
+    <script>
+        // --- 1. DATOS DE USUARIO Y MENÚ LATERAL ---
+        const usuarioActual = localStorage.getItem('cultura_user') || 'Juan M.';
+        
+        function cargarDatosUsuario() {
+            document.getElementById('modalUsername').textContent = usuarioActual;
+            const inicial = usuarioActual.charAt(0).toUpperCase();
+            document.getElementById('headerAvatar').textContent = inicial;
+            document.getElementById('modalAvatarInitials').textContent = inicial;
+        }
+
+        const menuLateral = document.getElementById('menuLateral');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const btnMenu = document.getElementById('btnMenu');
+        const btnCerrarMenu = document.getElementById('btnCerrarMenu');
+
+        function toggleMenu() {
+            menuLateral.classList.toggle('abierto');
+            menuOverlay.classList.toggle('abierto');
+        }
+
+        btnMenu.addEventListener('click', toggleMenu);
+        btnCerrarMenu.addEventListener('click', toggleMenu);
+        menuOverlay.addEventListener('click', toggleMenu);
+
+        function abrirCuenta() {
+            menuLateral.classList.remove('abierto');
+            menuOverlay.classList.remove('abierto');
+            const m = document.getElementById('modalCuenta');
+            const c = document.getElementById('modalCuentaContent');
+            m.classList.remove('hidden');
+            setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); c.classList.add('scale-100'); }, 10);
+        }
+
+        function cerrarCuenta() {
+            const m = document.getElementById('modalCuenta');
+            const c = document.getElementById('modalCuentaContent');
+            m.classList.add('opacity-0'); c.classList.remove('scale-100'); c.classList.add('scale-95');
+            setTimeout(() => { m.classList.add('hidden'); }, 300);
+        }
+
+        function cerrarSesion() {
+            if (confirm('¿Deseas salir del sistema?')) {
+                localStorage.removeItem('cultura_user'); window.location.href = 'login.html';     
+            }
+        }
+
+        // --- 2. LÓGICA DEL PUNTO DE VENTA ---
+        const CAJAS = [
+            { id: 1, nombre: "Caja 01", ubicacion: "Entrada principal",  estado: "ocupada"    },
+            { id: 2, nombre: "Caja 02", ubicacion: "Mostrador central",  estado: "disponible" },
+            { id: 3, nombre: "Caja 03", ubicacion: "Área de mesas",      estado: "ocupada"    },
+            { id: 4, nombre: "Caja 04", ubicacion: "Drive-through",      estado: "disponible" },
+            { id: 5, nombre: "Caja 05", ubicacion: "Terraza",            estado: "disponible" },
+        ];
+
+        const BILLETES  = [200, 100, 50, 20, 10, 5, 1];
+        const MONEDAS   = [0.50, 0.25, 0.10, 0.05];
+        const DENOM_ALL = [...BILLETES, ...MONEDAS];
+
+        let selectedCaja = null;
+        let cajaAbierta = true;
+
+        // --- NAVEGACIÓN TABS ---
+        function goTo(page, btn) {
+            document.querySelectorAll('.pos-page').forEach(p => p.classList.add('hidden'));
+            document.getElementById('page-' + page).classList.remove('hidden');
+
+            // Resetear estilos de todos los botones
+            document.querySelectorAll('.nav-tab').forEach(t => {
+                t.className = "nav-tab px-5 py-2.5 rounded-lg text-sm font-semibold transition-all text-gray-500 hover:text-gray-800 hover:bg-gray-50 flex items-center gap-2 whitespace-nowrap";
+            });
+            // Activar botón actual
+            btn.className = "nav-tab px-5 py-2.5 rounded-lg text-sm font-bold transition-all bg-emerald-50 text-emerald-700 flex items-center gap-2 whitespace-nowrap border border-emerald-100 shadow-sm";
+        }
+
+        // --- RENDERIZAR CAJAS ---
+        function renderCajas() {
+            const grid = document.getElementById('cajas-grid');
+            grid.innerHTML = CAJAS.map(c => {
+                const isAvail = c.estado === 'disponible';
+                const isSel = selectedCaja === c.id;
+                const isOcc = c.estado === 'ocupada';
+                
+                let baseClass = "bg-white border rounded-2xl p-4 transition-all relative group ";
+                if (isOcc) baseClass += "opacity-60 cursor-not-allowed border-gray-200 bg-gray-50";
+                else if (isSel) baseClass += "border-emerald-500 bg-emerald-50 shadow-md ring-2 ring-emerald-500/20";
+                else baseClass += "border-gray-200 hover:border-emerald-300 hover:shadow-md cursor-pointer";
+
+                let badgeClass = isAvail ? "bg-emerald-100 text-emerald-700" : isOcc ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700";
+                let badgeText = isAvail ? "Disponible" : isOcc ? "Ocupada" : "Fuera";
+                let iconColor = isSel ? "text-emerald-600" : isOcc ? "text-gray-400" : "text-gray-600";
+
+                return `
+                <div class="${baseClass}" onclick="${isOcc ? '' : `selectCaja(${c.id})`}">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-white border border-gray-100 shadow-sm flex items-center justify-center ${isSel ? 'border-emerald-200' : ''}">
+                            <i class="ti ti-device-desktop text-xl ${iconColor}"></i>
+                        </div>
+                        <span class="px-2 py-1 rounded text-[10px] font-bold uppercase ${badgeClass}">${badgeText}</span>
+                    </div>
+                    <div class="font-bold text-gray-800 text-base">${c.nombre}</div>
+                    <div class="text-xs text-gray-500 mt-1">${c.ubicacion}</div>
+                    ${isSel ? `<div class="absolute top-4 right-4 w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm"><i class="ti ti-check text-xs"></i></div>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        function selectCaja(id) {
+            selectedCaja = id;
+            renderCajas();
+            const caja = CAJAS.find(c => c.id === id);
+            showToast(`${caja.nombre} seleccionada`, 'check');
+        }
+
+        // --- GRID DENOMINACIONES (APERTURA Y CIERRE) ---
+        function buildDenomGrid(containerId, denomsArr, callbackName = "recalcFondo") {
+            const el = document.getElementById(containerId);
+            el.innerHTML = denomsArr.map(d => {
+                const key = 'denom_' + containerId + '_' + (d + '').replace('.', '_');
+                const label = d >= 1 ? `Q ${d}` : `Q ${d.toFixed(2)}`;
+                return `
+                <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 hover:border-emerald-300 transition-colors">
+                    <span class="font-mono-custom text-sm text-gray-600 font-bold w-16">${label}</span>
+                    <input type="number" min="0" value="0" id="${key}" oninput="${callbackName}()" class="w-16 px-2 py-1.5 border border-gray-300 rounded-lg text-center font-mono-custom text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all bg-white shadow-sm" />
+                    <span class="font-mono-custom text-sm font-bold text-gray-800 w-20 text-right" id="${key}_sub">Q 0.00</span>
+                </div>`;
+            }).join('');
+        }
+
+        function recalcFondo() {
+            let total = 0;
+            const desgloseLines = [];
+            DENOM_ALL.forEach(d => {
+                const bKey = 'denom_billetes-grid_'  + (d + '').replace('.', '_');
+                const mKey = 'denom_monedas-grid_'   + (d + '').replace('.', '_');
+                const key = document.getElementById(bKey) ? bKey : document.getElementById(mKey) ? mKey : null;
+                if (!key) return;
+                
+                const qty = parseInt(document.getElementById(key).value) || 0;
+                const sub = qty * d;
+                total += sub;
+                
+                const subEl = document.getElementById(key + '_sub');
+                if (subEl) subEl.textContent = `Q ${sub.toFixed(2)}`;
+                
+                if (qty > 0) {
+                    const label = d >= 1 ? `Q ${d}` : `Q ${d.toFixed(2)}`;
+                    desgloseLines.push(`<div class="flex justify-between text-sm"><span class="text-gray-600">${qty} × ${label}</span><span class="font-mono-custom text-gray-800 font-semibold">Q ${sub.toFixed(2)}</span></div>`);
+                }
+            });
+            
+            document.getElementById('total-fondo').textContent = `Q ${total.toFixed(2)}`;
+            const dw = document.getElementById('desglose-wrap');
+            dw.innerHTML = desgloseLines.length ? desgloseLines.join('') : '<div class="text-xs text-gray-400 text-center py-2">Ingresa las denominaciones</div>';
+
+            // Sincronizar Resumen Sidebar
+            document.getElementById('res-caja').textContent = document.getElementById('ap-caja').value;
+            document.getElementById('res-cajero').textContent = document.getElementById('ap-cajero').value;
+            document.getElementById('res-turno').textContent = document.getElementById('ap-turno').value;
+            document.getElementById('res-fecha').textContent = document.getElementById('ap-fecha').value || '—';
+            document.getElementById('res-hora').textContent = document.getElementById('ap-hora').value || '—';
+        }
+
+        function recalcContado() {
+            let total = 0;
+            [...BILLETES, ...MONEDAS].forEach(d => {
+                const key = 'denom_cierre-' + (d >= 1 ? 'billetes' : 'monedas') + '-grid_' + (d + '').replace('.', '_');
+                const el = document.getElementById(key);
+                if (!el) return;
+                const qty = parseInt(el.value) || 0;
+                const sub = qty * d;
+                total += sub;
+                const s = document.getElementById(key + '_sub');
+                if (s) s.textContent = `Q ${sub.toFixed(2)}`;
+            });
+            
+            document.getElementById('total-contado').textContent = `Q ${total.toFixed(2)}`;
+            document.getElementById('res-total-contado').textContent = `Q ${total.toFixed(2)}`;
+            
+            const esperado = 4787.50;
+            const diff = total - esperado;
+            const diffEl = document.getElementById('res-diferencia');
+            diffEl.textContent = `Q ${diff.toFixed(2)}`;
+            diffEl.className = `text-xl font-bold font-mono-custom ${diff === 0 ? 'text-emerald-600' : diff > 0 ? 'text-amber-500' : 'text-red-600'}`;
+            
+            document.getElementById('mc-contado').textContent = `Q ${total.toFixed(2)}`;
+            const mcDiffEl = document.getElementById('mc-diff');
+            mcDiffEl.textContent = `Q ${diff.toFixed(2)}`;
+            mcDiffEl.className = `font-mono-custom font-bold ${diff === 0 ? 'text-emerald-600' : diff > 0 ? 'text-amber-500' : 'text-red-600'}`;
+            
+            document.getElementById('hora-cierre').textContent = new Date().toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // --- ACCIONES BOTONES ---
+        function asignarCaja() {
+            const cajero = document.getElementById('a-cajero').value;
+            const turno  = document.getElementById('a-turno').value.split(' ')[0];
+            if (!selectedCaja) { showToast('Selecciona una caja primero', 'alert'); return; }
+            if (!cajero)       { showToast('Selecciona un cajero', 'alert'); return; }
+            
+            const caja = CAJAS.find(c => c.id === selectedCaja);
+            const tbody = document.getElementById('asignaciones-tbody');
+            const tr = document.createElement('tr');
+            tr.className = "hover:bg-gray-50";
+            tr.innerHTML = `
+                <td class="px-6 py-4 font-mono-custom font-bold text-gray-700">${caja.nombre}</td>
+                <td class="px-6 py-4 font-medium text-gray-800">${cajero}</td>
+                <td class="px-6 py-4 text-gray-600">${turno}</td>
+                <td class="px-6 py-4"><span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold">Activa</span></td>
+            `;
+            tbody.appendChild(tr);
+            
+            caja.estado = 'ocupada';
+            selectedCaja = null;
+            renderCajas();
+            limpiarAsignacion();
+            showToast(`${caja.nombre} asignada a ${cajero}`, 'check');
+        }
+
+        function limpiarAsignacion() {
+            document.getElementById('a-cajero').value = '';
+            document.getElementById('a-notas').value  = '';
+            selectedCaja = null;
+            renderCajas();
+        }
+
+        function abrirCaja() {
+            const fondo = document.getElementById('total-fondo').textContent;
+            const caja  = document.getElementById('ap-caja').value;
+            document.getElementById('modal-apertura-resumen-content').innerHTML = `
+                <div class="flex justify-between text-sm"><span class="text-gray-500">Caja</span><span class="font-mono-custom font-bold text-gray-700">${caja}</span></div>
+                <div class="flex justify-between text-sm"><span class="text-gray-500">Fondo inicial</span><span class="font-mono-custom font-bold text-emerald-600">${fondo}</span></div>
+                <div class="flex justify-between text-sm"><span class="text-gray-500">Hora</span><span class="font-mono-custom text-gray-700">${new Date().toLocaleTimeString('es-GT',{hour:'2-digit',minute:'2-digit'})}</span></div>
+            `;
+            openModal('modal-apertura-ok');
+            updateNavStatus(true);
+        }
+
+        function cerrarCaja() {
+            openModal('modal-cierre');
+        }
+
+        function confirmarCierre() {
+            closeModal('modal-cierre');
+            updateNavStatus(false);
+            showToast('Caja cerrada exitosamente. Corte generado.', 'check');
+        }
+
+        function imprimirApertura() { showToast('Enviando a impresora...', 'print'); }
+        function imprimirCierre() { showToast('Imprimiendo corte de caja...', 'print'); }
+
+        function updateNavStatus(open) {
+            const el = document.getElementById('nav-status');
+            if (open) {
+                el.className = 'flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full border border-emerald-200 shadow-sm text-sm font-bold transition-all';
+                el.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Caja abierta';
+            } else {
+                el.className = 'flex items-center gap-2 bg-gray-100 text-gray-600 px-4 py-2 rounded-full border border-gray-200 shadow-sm text-sm font-bold transition-all';
+                el.innerHTML = '<span class="w-2 h-2 rounded-full bg-gray-400"></span> Caja cerrada';
+            }
+        }
+
+        // --- MODALES GENERALES ---
+        function openModal(id) {
+            const m = document.getElementById(id);
+            const content = m.querySelector('.modal-content-anim');
+            m.classList.remove('hidden');
+            setTimeout(() => { m.classList.remove('opacity-0'); content.classList.remove('scale-95'); content.classList.add('scale-100'); }, 10);
+        }
+
+        function closeModal(id) {
+            const m = document.getElementById(id);
+            const content = m.querySelector('.modal-content-anim');
+            m.classList.add('opacity-0'); content.classList.remove('scale-100'); content.classList.add('scale-95');
+            setTimeout(() => { m.classList.add('hidden'); }, 300);
+        }
+
+        function handleModalClick(e, id) { if (e.target.id === id) closeModal(id); }
+
+        // --- TOASTS ---
+        function showToast(msg, type = 'info') {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = msg;
+            
+            const icon = document.getElementById('toast-icon');
+            if(type === 'check') icon.className = "ti ti-check text-emerald-400 text-xl";
+            else if(type === 'alert') icon.className = "ti ti-alert-triangle text-amber-400 text-xl";
+            else if(type === 'print') icon.className = "ti ti-printer text-blue-400 text-xl";
+            else icon.className = "ti ti-info-circle text-gray-300 text-xl";
+
+            t.classList.remove('translate-y-10', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-10', 'opacity-0'), 3000);
+        }
+
+        // --- INIT ---
+        window.onload = () => {
+            cargarDatosUsuario();
+            
+            const today = new Date().toISOString().split('T')[0];
+            const nowTime = new Date().toTimeString().slice(0, 5);
+            document.querySelectorAll('input[type=date]').forEach(el => el.value = today);
+            document.querySelectorAll('input[type=time]').forEach(el => el.value = nowTime);
+
+            renderCajas();
+            buildDenomGrid('billetes-grid', BILLETES, "recalcFondo");
+            buildDenomGrid('monedas-grid', MONEDAS, "recalcFondo");
+            
+            // Para el cierre se usan grids separados
+            buildDenomGrid('cierre-billetes-grid', BILLETES, "recalcContado");
+            buildDenomGrid('cierre-monedas-grid', MONEDAS, "recalcContado");
+        };
+    </script>
 </body>
 </html>
