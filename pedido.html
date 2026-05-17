@@ -3,104 +3,449 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Toma de Pedidos - Cultura Coffee</title>
+    <title>Toma de Pedidos - Cultura Coffee Shop</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+    
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #121212; color: #ffffff; }
-        .active-tab { background-color: rgba(163, 230, 53, 0.1); border-color: #a3e635; color: #a3e635; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+            color: #1f2937;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        .font-mono-custom { font-family: 'DM Mono', monospace; }
+
+        /* Menú lateral (Off-canvas) */
+        #menuLateral { 
+            position: fixed; 
+            top: 0; 
+            left: -100%;
+            width: 280px; 
+            height: 100vh; 
+            height: 100dvh;
+            background-color: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            transition: left 0.3s ease-in-out; 
+            z-index: 50;
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 4px 0 15px rgba(0,0,0,0.05);
+        }
+        #menuLateral.abierto { left: 0; }
+
+        #menuOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 40;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        #menuOverlay.abierto {
+            display: block;
+            opacity: 1;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px;}
+        ::-webkit-scrollbar-track { background: #f9fafb; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10B981; }
+
+        /* Estilo animado para clics en productos */
+        .btn-producto { transition: transform 0.1s, box-shadow 0.1s; border: 1px solid #e5e7eb; }
+        .btn-producto:active { transform: scale(0.96); border-color: #10B981; }
     </style>
 </head>
-<body class="pb-24">
+<body class="antialiased flex flex-col min-h-screen">
 
-    <header class="bg-[#1e1e1e] p-4 flex items-center justify-between sticky top-0 z-50 border-b border-[#333]">
-        <a href="dashboard_demo_cultura_coffee_shop.html" class="text-gray-400 border border-[#333] px-3 py-2 rounded-lg flex items-center gap-2 text-sm">
-            <i class="fas fa-arrow-left"></i> Volver
-        </a>
-        <div class="font-bold flex items-center gap-2">
-            <i class="fas fa-coffee text-[#a3e635]"></i> Nueva Orden
+    <header class="bg-white border-b border-gray-200 p-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+        <div class="flex items-center gap-3">
+            <button id="btnMenu" class="text-gray-500 hover:text-emerald-600 focus:outline-none transition-colors p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+            <div class="flex items-center gap-2">
+                <img src="nexora.jpg" alt="Nexora Logo" class="w-8 h-8 sm:w-9 sm:h-9 object-cover rounded-lg border border-gray-200 shadow-sm" onerror="this.onerror=null; this.src='https://placehold.co/100x100/10B981/ffffff?text=NX';"/>
+                <h2 class="text-lg font-bold tracking-wider text-gray-800">Nexora <span class="text-emerald-600 font-medium text-sm hidden sm:inline"> - Cultura Coffee Shop</span></h2>
+            </div>
         </div>
+        
+        <button onclick="abrirCuenta()" class="w-9 h-9 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 font-bold hover:bg-emerald-600 hover:text-white transition-colors shadow-sm">
+            <span id="headerAvatar">U</span>
+        </button>
     </header>
 
-    <div class="flex p-4 gap-4">
-        <button id="btnMesa" onclick="setTipo('mesa')" class="flex-1 p-4 rounded-xl border border-[#333] bg-[#1e1e1e] font-bold active-tab">
-            <i class="fas fa-utensils"></i> Mesa
-        </button>
-        <button id="btnLlevar" onclick="setTipo('llevar')" class="flex-1 p-4 rounded-xl border border-[#333] bg-[#1e1e1e] font-bold text-gray-500">
-            <i class="fas fa-shopping-bag"></i> Llevar
-        </button>
+    <div id="menuOverlay"></div>
+
+    <div id="menuLateral">
+        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+            <div class="flex flex-col">
+                <span class="text-xs text-gray-500 font-semibold tracking-widest uppercase">Menú Principal</span>
+            </div>
+            <button id="btnCerrarMenu" class="text-gray-400 hover:text-gray-800 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        </div>
+
+        <div class="flex-1 p-4 overflow-y-auto space-y-2">
+            <a href="Inventory.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg> Inventario
+            </a>
+            <a href="Pnt_venta.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg> Punto de Venta
+            </a>
+            <a href="pedido.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 15.75h3.75M18 1.5v21m-12-21v21m12-21H6m12 0a2.25 2.25 0 002.25 2.25V19.5A2.25 2.25 0 0118 21.75H6a2.25 2.25 0 01-2.25-2.25V3.75A2.25 2.25 0 016 1.5h12z" /></svg> Toma de Pedidos
+            </a>
+            <a href="dashboard_demo_cultura_coffee_shop.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg> Dashboard Principal
+            </a>
+        </div>
+
+        <div class="p-4 border-t border-gray-100 space-y-2 bg-gray-50/50">
+            <button onclick="abrirCuenta()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 bg-white hover:bg-emerald-50 hover:text-emerald-700 border border-gray-200 shadow-sm transition-all">
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                    <span class="font-medium text-sm">Mi Cuenta</span>
+                </div>
+            </button>
+            <button onclick="cerrarSesion()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" /></svg>
+                Salir del Sistema
+            </button>
+        </div>
     </div>
 
-    <div id="cajaMesa" class="mx-4 p-4 bg-[#1e1e1e] border border-[#333] rounded-xl flex justify-between items-center mb-6">
-        <span class="text-gray-400">Número de mesa:</span>
-        <input type="number" id="numMesa" class="w-16 bg-[#121212] border border-[#333] rounded-lg p-2 text-center font-bold outline-none focus:border-[#a3e635]" placeholder="#">
-    </div>
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:flex lg:gap-6 pb-32 lg:pb-6">
+        
+        <div class="flex-1 space-y-6">
+            
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-gray-200 pb-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800 mb-1 flex items-center gap-2">
+                        <i class="ti ti-receipt text-emerald-600 text-2xl"></i> Toma de Pedidos
+                    </h1>
+                    <p class="text-sm text-gray-500">Selecciona los productos de la orden</p>
+                </div>
+            </div>
 
-    <div class="px-4 space-y-6">
-        <div>
-            <h3 class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-4">Cafetería</h3>
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="add('Espresso', 15)" class="bg-[#1e1e1e] p-4 rounded-2xl border border-[#333] text-center active:scale-95 transition-transform">
-                    <i class="fas fa-mug-hot text-gray-500 mb-2"></i>
-                    <p class="font-bold text-sm">Espresso</p>
-                    <p class="text-[#a3e635] font-bold">Q15</p>
+            <div class="flex p-1 bg-gray-100 rounded-xl">
+                <button id="btnMesa" onclick="setTipo('mesa')" class="flex-1 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all bg-white text-emerald-700 shadow-sm border border-gray-200">
+                    <i class="ti ti-armchair"></i> Para Mesa
                 </button>
-                <button onclick="add('Latte', 22)" class="bg-[#1e1e1e] p-4 rounded-2xl border border-[#333] text-center active:scale-95 transition-transform">
-                    <i class="fas fa-coffee text-gray-500 mb-2"></i>
-                    <p class="font-bold text-sm">Latte</p>
-                    <p class="text-[#a3e635] font-bold">Q22</p>
+                <button id="btnLlevar" onclick="setTipo('llevar')" class="flex-1 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all text-gray-500 hover:text-gray-800">
+                    <i class="ti ti-shopping-bag"></i> Para Llevar
                 </button>
             </div>
+
+            <div id="cajaMesa" class="bg-white p-4 border border-gray-200 shadow-sm rounded-xl flex justify-between items-center transition-all duration-300">
+                <span class="text-gray-600 font-medium text-sm">Número de mesa asignada:</span>
+                <input type="number" id="numMesa" class="w-20 bg-gray-50 border border-gray-300 rounded-lg p-2 text-center font-bold text-lg outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all text-gray-800" placeholder="#">
+            </div>
+
+            <div>
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="ti ti-coffee"></i> Cafetería</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                    <button onclick="addItem('Espresso', 15)" class="btn-producto bg-white p-4 rounded-2xl flex flex-col items-center shadow-sm hover:shadow-md">
+                        <div class="w-12 h-12 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center mb-3">
+                            <i class="ti ti-cup text-2xl"></i>
+                        </div>
+                        <p class="font-bold text-gray-800 text-sm">Espresso</p>
+                        <p class="text-emerald-600 font-mono-custom font-bold mt-1">Q 15.00</p>
+                    </button>
+                    
+                    <button onclick="addItem('Latte', 22)" class="btn-producto bg-white p-4 rounded-2xl flex flex-col items-center shadow-sm hover:shadow-md">
+                        <div class="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
+                            <i class="ti ti-mug text-2xl"></i>
+                        </div>
+                        <p class="font-bold text-gray-800 text-sm">Latte</p>
+                        <p class="text-emerald-600 font-mono-custom font-bold mt-1">Q 22.00</p>
+                    </button>
+
+                    <button onclick="addItem('Cappuccino', 25)" class="btn-producto bg-white p-4 rounded-2xl flex flex-col items-center shadow-sm hover:shadow-md">
+                        <div class="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mb-3">
+                            <i class="ti ti-coffee text-2xl"></i>
+                        </div>
+                        <p class="font-bold text-gray-800 text-sm">Cappuccino</p>
+                        <p class="text-emerald-600 font-mono-custom font-bold mt-1">Q 25.00</p>
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 mt-6 flex items-center gap-2"><i class="ti ti-bread"></i> Panadería</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                    <button onclick="addItem('Croissant', 12)" class="btn-producto bg-white p-4 rounded-2xl flex flex-col items-center shadow-sm hover:shadow-md">
+                        <div class="w-12 h-12 rounded-full bg-yellow-50 text-yellow-600 flex items-center justify-center mb-3">
+                            <i class="ti ti-baguette text-2xl"></i>
+                        </div>
+                        <p class="font-bold text-gray-800 text-sm">Croissant</p>
+                        <p class="text-emerald-600 font-mono-custom font-bold mt-1">Q 12.00</p>
+                    </button>
+
+                    <button onclick="addItem('Galleta Choco', 10)" class="btn-producto bg-white p-4 rounded-2xl flex flex-col items-center shadow-sm hover:shadow-md">
+                        <div class="w-12 h-12 rounded-full bg-yellow-50 text-yellow-600 flex items-center justify-center mb-3">
+                            <i class="ti ti-cookie text-2xl"></i>
+                        </div>
+                        <p class="font-bold text-gray-800 text-sm">Galleta Choco</p>
+                        <p class="text-emerald-600 font-mono-custom font-bold mt-1">Q 10.00</p>
+                    </button>
+                </div>
+            </div>
+
         </div>
 
-        <div>
-            <h3 class="text-gray-500 text-xs font-bold uppercase tracking-widest mb-4">Panadería</h3>
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="add('Croissant', 12)" class="bg-[#1e1e1e] p-4 rounded-2xl border border-[#333] text-center active:scale-95 transition-transform">
-                    <i class="fas fa-bread-slice text-gray-500 mb-2"></i>
-                    <p class="font-bold text-sm">Croissant</p>
-                    <p class="text-[#a3e635] font-bold">Q12</p>
-                </button>
+        <div class="fixed bottom-0 left-0 w-full lg:relative lg:w-96 z-40 bg-white lg:bg-transparent lg:shadow-none shadow-[0_-10px_20px_rgba(0,0,0,0.05)] border-t lg:border-t-0 border-gray-200">
+            <div class="bg-white lg:border border-gray-200 lg:rounded-2xl lg:shadow-sm flex flex-col lg:sticky lg:top-24 max-h-[80vh] lg:max-h-[calc(100vh-8rem)]">
+                
+                <div class="p-4 border-b border-gray-100 hidden lg:flex justify-between items-center bg-gray-50/50 lg:rounded-t-2xl">
+                    <h3 class="font-bold text-gray-800">Ticket Actual</h3>
+                    <button onclick="clearCart()" class="text-xs font-semibold text-red-500 hover:text-red-700 flex items-center gap-1"><i class="ti ti-trash"></i> Vaciar</button>
+                </div>
+
+                <div id="cartItemsList" class="p-4 flex-1 overflow-y-auto space-y-3 hidden lg:block bg-white min-h-[200px]">
+                    <div class="text-center text-gray-400 py-10 text-sm flex flex-col items-center gap-2">
+                        <i class="ti ti-shopping-cart text-4xl text-gray-200"></i>
+                        Aún no hay productos en la orden.
+                    </div>
+                </div>
+
+                <div class="p-4 lg:p-5 border-t border-gray-100 bg-white lg:rounded-b-2xl">
+                    <button onclick="toggleMobileCart()" class="lg:hidden w-full flex justify-between items-center mb-3 text-sm text-gray-500 font-medium">
+                        <span class="flex items-center gap-1"><i class="ti ti-shopping-cart text-emerald-600 text-lg"></i> Ver detalles del ticket</span>
+                        <i class="ti ti-chevron-up" id="mobileCartIcon"></i>
+                    </button>
+
+                    <div class="flex justify-between items-center mb-4">
+                        <p class="text-gray-500 text-xs font-bold uppercase tracking-wider">Total Pedido</p>
+                        <p class="text-3xl font-bold font-mono-custom text-emerald-600">Q <span id="total">0.00</span></p>
+                    </div>
+                    <button onclick="sendOrder()" class="w-full bg-emerald-600 text-white px-6 py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-700 active:scale-95 transition-all shadow-sm">
+                        Enviar a Cocina <i class="ti ti-send"></i>
+                    </button>
+                </div>
             </div>
+        </div>
+    </main>
+
+    <div id="modalCuenta" class="fixed inset-0 bg-black/40 z-[60] flex justify-center items-center p-4 hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm">
+        <div class="bg-white border border-gray-200 rounded-3xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300" id="modalCuentaContent">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-lg font-bold text-gray-800">Perfil de Usuario</h3>
+                <button onclick="cerrarCuenta()" class="text-gray-400 hover:text-gray-800 p-1"><i class="ti ti-x text-xl"></i></button>
+            </div>
+            <div class="flex flex-col items-center py-6 border-y border-gray-100 mb-6">
+                <div class="w-20 h-20 rounded-full bg-emerald-50 border-2 border-emerald-500 flex items-center justify-center text-emerald-600 text-3xl font-bold mb-3 shadow-[0_0_15px_rgba(16,185,129,0.15)]"><span id="modalAvatarInitials">U</span></div>
+                <h4 class="text-xl font-bold text-gray-800" id="modalUsername">Cargando...</h4>
+                <p class="text-emerald-600 text-sm font-medium mt-1">Acceso Autorizado</p>
+            </div>
+            <button onclick="cerrarSesion()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 px-4 rounded-xl border border-red-200 flex items-center justify-center gap-2"><i class="ti ti-logout text-lg"></i> Cerrar Sesión</button>
         </div>
     </div>
 
-    <div class="fixed bottom-0 left-0 w-full bg-[#1e1e1e] p-5 border-t border-[#333] flex justify-between items-center z-50">
-        <div>
-            <p class="text-gray-500 text-xs uppercase">Total Pedido</p>
-            <p class="text-2xl font-bold">Q <span id="total">0.00</span></p>
-        </div>
-        <button onclick="send()" class="bg-[#a3e635] text-black px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-[#90d12c]">
-            Enviar <i class="fas fa-paper-plane"></i>
-        </button>
+    <div id="toast" class="fixed bottom-32 lg:bottom-5 right-5 bg-gray-800 text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium transform translate-y-10 opacity-0 transition-all duration-300 z-[70] pointer-events-none flex items-center gap-2">
+        <i class="ti ti-check text-emerald-400 text-lg" id="toast-icon"></i> <span id="toast-msg"></span>
     </div>
 
     <script>
-        let total = 0;
-        let items = [];
+        // --- MENÚ LATERAL Y USUARIO ---
+        const usuarioActual = localStorage.getItem('cultura_user') || 'Usuario Demo';
+        
+        function cargarDatosUsuario() {
+            document.getElementById('modalUsername').textContent = usuarioActual;
+            const inicial = usuarioActual.charAt(0).toUpperCase();
+            document.getElementById('headerAvatar').textContent = inicial;
+            document.getElementById('modalAvatarInitials').textContent = inicial;
+        }
+
+        const menuLateral = document.getElementById('menuLateral');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const btnMenu = document.getElementById('btnMenu');
+        const btnCerrarMenu = document.getElementById('btnCerrarMenu');
+
+        function toggleMenu() {
+            menuLateral.classList.toggle('abierto');
+            menuOverlay.classList.toggle('abierto');
+        }
+
+        btnMenu.addEventListener('click', toggleMenu);
+        btnCerrarMenu.addEventListener('click', toggleMenu);
+        menuOverlay.addEventListener('click', toggleMenu);
+
+        function abrirCuenta() {
+            menuLateral.classList.remove('abierto');
+            menuOverlay.classList.remove('abierto');
+            const m = document.getElementById('modalCuenta');
+            const c = document.getElementById('modalCuentaContent');
+            m.classList.remove('hidden');
+            setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); c.classList.add('scale-100'); }, 10);
+        }
+
+        function cerrarCuenta() {
+            const m = document.getElementById('modalCuenta');
+            const c = document.getElementById('modalCuentaContent');
+            m.classList.add('opacity-0'); c.classList.remove('scale-100'); c.classList.add('scale-95');
+            setTimeout(() => { m.classList.add('hidden'); }, 300);
+        }
+
+        function cerrarSesion() {
+            if (confirm('¿Deseas salir del sistema?')) {
+                localStorage.removeItem('cultura_user'); window.location.href = 'login.html';     
+            }
+        }
+
+        // --- LÓGICA DE LA ORDEN ---
+        let cart = [];
         let tipo = 'mesa';
 
         function setTipo(t) {
             tipo = t;
-            document.getElementById('btnMesa').className = t === 'mesa' ? 'flex-1 p-4 rounded-xl border font-bold active-tab' : 'flex-1 p-4 rounded-xl border border-[#333] bg-[#1e1e1e] font-bold text-gray-500';
-            document.getElementById('btnLlevar').className = t === 'llevar' ? 'flex-1 p-4 rounded-xl border font-bold active-tab' : 'flex-1 p-4 rounded-xl border border-[#333] bg-[#1e1e1e] font-bold text-gray-500';
-            document.getElementById('cajaMesa').style.display = t === 'mesa' ? 'flex' : 'none';
+            const btnMesa = document.getElementById('btnMesa');
+            const btnLlevar = document.getElementById('btnLlevar');
+            const cajaMesa = document.getElementById('cajaMesa');
+
+            if (t === 'mesa') {
+                btnMesa.className = "flex-1 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all bg-white text-emerald-700 shadow-sm border border-gray-200";
+                btnLlevar.className = "flex-1 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all text-gray-500 hover:text-gray-800";
+                cajaMesa.style.display = 'flex';
+                // Añadir un pequeño delay para la animación de entrada si se maneja por CSS, aquí simplemente mostramos
+            } else {
+                btnLlevar.className = "flex-1 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all bg-white text-emerald-700 shadow-sm border border-gray-200";
+                btnMesa.className = "flex-1 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all text-gray-500 hover:text-gray-800";
+                cajaMesa.style.display = 'none';
+            }
         }
 
-        function add(n, p) {
-            total += p;
-            items.push(n);
-            document.getElementById('total').innerText = total.toFixed(2);
+        function addItem(name, price) {
+            let existingItem = cart.find(item => item.name === name);
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                cart.push({ name: name, price: price, qty: 1 });
+            }
+            renderCart();
+            showToast(`+1 ${name} agregado`, 'check');
         }
 
-        function send() {
-            if (items.length === 0) return alert("Agrega productos primero");
-            let m = tipo === 'mesa' ? "Mesa #" + document.getElementById('numMesa').value : "Para Llevar";
-            if (tipo === 'mesa' && !document.getElementById('numMesa').value) return alert("Pon el número de mesa");
+        function removeItem(name) {
+            let itemIndex = cart.findIndex(item => item.name === name);
+            if (itemIndex > -1) {
+                if (cart[itemIndex].qty > 1) {
+                    cart[itemIndex].qty -= 1;
+                } else {
+                    cart.splice(itemIndex, 1);
+                }
+            }
+            renderCart();
+        }
+
+        function clearCart() {
+            if(cart.length === 0) return;
+            if(confirm('¿Deseas vaciar el ticket actual?')) {
+                cart = [];
+                renderCart();
+            }
+        }
+
+        function renderCart() {
+            const listEl = document.getElementById('cartItemsList');
+            const totalEl = document.getElementById('total');
+            let total = 0;
+
+            if (cart.length === 0) {
+                listEl.innerHTML = `
+                    <div class="text-center text-gray-400 py-10 text-sm flex flex-col items-center gap-2">
+                        <i class="ti ti-receipt text-4xl text-gray-200"></i>
+                        Aún no hay productos en la orden.
+                    </div>`;
+            } else {
+                listEl.innerHTML = cart.map(item => {
+                    const itemTotal = item.qty * item.price;
+                    total += itemTotal;
+                    return `
+                    <div class="flex items-center justify-between border-b border-gray-50 pb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="flex flex-col items-center bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
+                                <button onclick="addItem('${item.name}', ${item.price})" class="w-8 h-6 flex items-center justify-center text-gray-500 hover:bg-gray-200"><i class="ti ti-plus text-xs"></i></button>
+                                <span class="w-8 py-0.5 text-center font-bold text-sm bg-white">${item.qty}</span>
+                                <button onclick="removeItem('${item.name}')" class="w-8 h-6 flex items-center justify-center text-gray-500 hover:bg-gray-200"><i class="ti ti-minus text-xs"></i></button>
+                            </div>
+                            <div>
+                                <p class="font-bold text-gray-800 text-sm">${item.name}</p>
+                                <p class="text-xs text-gray-500 font-mono-custom">Q ${item.price.toFixed(2)} c/u</p>
+                            </div>
+                        </div>
+                        <span class="font-bold font-mono-custom text-gray-800">Q ${itemTotal.toFixed(2)}</span>
+                    </div>`;
+                }).join('');
+            }
             
-            alert("Orden enviada: " + m + "\nTotal: Q" + total.toFixed(2));
-            location.reload();
+            totalEl.innerText = total.toFixed(2);
         }
+
+        function toggleMobileCart() {
+            const list = document.getElementById('cartItemsList');
+            const icon = document.getElementById('mobileCartIcon');
+            
+            if (list.classList.contains('hidden')) {
+                list.classList.remove('hidden');
+                icon.classList.remove('ti-chevron-up');
+                icon.classList.add('ti-chevron-down');
+            } else {
+                list.classList.add('hidden');
+                icon.classList.add('ti-chevron-up');
+                icon.classList.remove('ti-chevron-down');
+            }
+        }
+
+        function sendOrder() {
+            if (cart.length === 0) {
+                showToast("La orden está vacía", "alert");
+                return;
+            }
+            
+            let mesaInput = document.getElementById('numMesa').value;
+            if (tipo === 'mesa' && !mesaInput) {
+                showToast("Por favor ingresa el número de mesa", "alert");
+                document.getElementById('numMesa').focus();
+                return;
+            }
+
+            let desc = tipo === 'mesa' ? `Mesa #${mesaInput}` : "Para Llevar";
+            
+            if(confirm(`¿Enviar orden a cocina?\n\nTipo: ${desc}\nTotal: Q ${document.getElementById('total').innerText}`)) {
+                showToast("Orden enviada exitosamente", "check");
+                // Reset form
+                cart = [];
+                document.getElementById('numMesa').value = '';
+                renderCart();
+                setTipo('mesa'); // Reset a mesa por defecto
+            }
+        }
+
+        function showToast(msg, type = 'info') {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = msg;
+            
+            const icon = document.getElementById('toast-icon');
+            if(type === 'check') icon.className = "ti ti-check text-emerald-400 text-xl";
+            else if(type === 'alert') icon.className = "ti ti-alert-triangle text-amber-400 text-xl";
+            else icon.className = "ti ti-info-circle text-gray-300 text-xl";
+
+            t.classList.remove('translate-y-10', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-10', 'opacity-0'), 3000);
+        }
+
+        // --- INIT ---
+        window.onload = () => {
+            cargarDatosUsuario();
+            renderCart();
+        };
     </script>
 </body>
 </html>
