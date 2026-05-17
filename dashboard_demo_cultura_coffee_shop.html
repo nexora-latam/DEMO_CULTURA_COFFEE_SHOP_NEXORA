@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Dashboard - Cultura Coffee Shop</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f9fafb; /* Fondo principal gris súper claro (Tailwind gray-50) */
-            color: #1f2937; /* Texto principal oscuro */
+            background-color: #f9fafb;
+            color: #1f2937;
             margin: 0;
             overflow-x: hidden;
         }
@@ -21,12 +22,12 @@
         #menuLateral { 
             position: fixed; 
             top: 0; 
-            left: -100%; /* Oculto por defecto */
+            left: -100%;
             width: 280px; 
             height: 100vh; 
             height: 100dvh;
-            background-color: #ffffff; /* Fondo blanco */
-            border-right: 1px solid #e5e7eb; /* Borde gris claro */
+            background-color: #ffffff;
+            border-right: 1px solid #e5e7eb;
             transition: left 0.3s ease-in-out; 
             z-index: 50;
             display: flex; 
@@ -39,7 +40,7 @@
         #menuOverlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.4); /* Overlay un poco más suave */
+            background: rgba(0,0,0,0.4);
             z-index: 40;
             display: none;
             opacity: 0;
@@ -59,7 +60,6 @@
 </head>
 <body class="antialiased">
 
-    <!-- Header superior -->
     <header class="bg-white border-b border-gray-200 p-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
         <div class="flex items-center gap-3">
             <button id="btnMenu" class="text-gray-500 hover:text-emerald-600 focus:outline-none transition-colors p-1">
@@ -68,29 +68,24 @@
                 </svg>
             </button>
             <div class="flex items-center gap-2">
-                <!-- Imagen de Nexora en lugar del ícono verde -->
                 <img 
                     src="nexora.jpg" 
                     alt="Nexora Logo" 
                     class="w-8 h-8 sm:w-9 sm:h-9 object-cover rounded-lg border border-gray-200 shadow-sm"
                     onerror="this.onerror=null; this.src='https://placehold.co/100x100/10B981/ffffff?text=NX';"
                 />
-                <h2 class="text-lg font-bold tracking-wider text-gray-800">Nexora <span class="text-emerald-600 font-medium text-sm"> - Cultura Coffee Shop</span></h2>
+                <h2 class="text-lg font-bold tracking-wider text-gray-800">Nexora <span class="text-emerald-600 font-medium text-sm hidden sm:inline"> - Cultura Coffee Shop</span></h2>
             </div>
         </div>
         
-        <!-- Avatar pequeño arriba a la derecha -->
         <button onclick="abrirCuenta()" class="w-9 h-9 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 font-bold hover:bg-emerald-600 hover:text-white transition-colors shadow-sm">
             <span id="headerAvatar">U</span>
         </button>
     </header>
 
-    <!-- Overlay oscuro -->
     <div id="menuOverlay"></div>
 
-    <!-- Menú Lateral -->
     <div id="menuLateral">
-        <!-- Encabezado del Menú -->
         <div class="p-6 border-b border-gray-100 flex justify-between items-center">
             <div class="flex flex-col">
                 <span class="text-xs text-gray-500 font-semibold tracking-widest uppercase">Menú Principal</span>
@@ -102,7 +97,6 @@
             </button>
         </div>
 
-        <!-- Enlaces Principales -->
         <div class="flex-1 p-4 overflow-y-auto space-y-2">
             <a href="Inventory.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
@@ -118,7 +112,6 @@
             </a>
         </div>
 
-        <!-- Sección Inferior (Cuenta y Salir) -->
         <div class="p-4 border-t border-gray-100 space-y-2 bg-gray-50/50">
             <button onclick="abrirCuenta()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 bg-white hover:bg-emerald-50 hover:text-emerald-700 border border-gray-200 shadow-sm transition-all">
                 <div class="flex items-center gap-3">
@@ -134,17 +127,114 @@
         </div>
     </div>
 
-    <!-- Contenido Principal -->
-    <main class="p-6 sm:p-8 max-w-5xl mx-auto">
-        <div class="mb-8">
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Hola, <span id="nombreUsuarioMain" class="text-emerald-600">Usuario</span></h1>
+    <main class="p-6 sm:p-8 max-w-6xl mx-auto space-y-8">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-1">Hola, <span id="nombreUsuarioMain" class="text-emerald-600">Usuario</span></h1>
+                <p class="text-sm text-gray-500">Resumen financiero y operativo actualizado al momento.</p>
+            </div>
+            <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm flex items-center gap-2 w-full sm:w-auto justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                Corte de Caja
+            </button>
         </div>
 
-        <!-- El contenido de las tarjetas y el texto inferior ha sido removido. 
-             Espacio listo para las nuevas gráficas o reportes. -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:border-emerald-200 transition-colors">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div class="text-gray-500 text-sm font-semibold">Ventas de Hoy</div>
+                </div>
+                <div class="text-3xl font-bold text-gray-800 tracking-tight">Q. 2,450.00</div>
+                <div class="text-xs text-emerald-600 mt-2 font-medium flex items-center gap-1">↑ +12% comparado a ayer</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:border-emerald-200 transition-colors">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                    </div>
+                    <div class="text-gray-500 text-sm font-semibold">Órdenes</div>
+                </div>
+                <div class="text-3xl font-bold text-gray-800 tracking-tight">48</div>
+                <div class="text-xs text-emerald-600 mt-2 font-medium flex items-center gap-1">↑ +5% comparado a ayer</div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:border-emerald-200 transition-colors">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="p-2 bg-purple-50 text-purple-600 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                    </div>
+                    <div class="text-gray-500 text-sm font-semibold">Ticket Promedio</div>
+                </div>
+                <div class="text-3xl font-bold text-gray-800 tracking-tight">Q. 51.04</div>
+                <div class="text-xs text-gray-400 mt-2 font-medium flex items-center gap-1">Manteniendo el promedio</div>
+            </div>
+
+            <div class="bg-red-50 p-5 rounded-2xl border border-red-100 shadow-sm">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="p-2 bg-red-100 text-red-600 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <div class="text-red-600 text-sm font-semibold">Alertas de Inventario</div>
+                </div>
+                <div class="text-3xl font-bold text-red-700 tracking-tight">3</div>
+                <div class="text-xs text-red-500 mt-2 font-medium">Revisar: Leche entera, Vasos...</div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <h3 class="font-bold text-gray-800 text-lg">Transacciones Recientes</h3>
+                <a href="#" class="text-sm text-emerald-600 font-medium hover:underline">Ver todas</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-gray-500 uppercase bg-white border-b border-gray-100">
+                        <tr>
+                            <th class="px-6 py-4 font-semibold">Ticket / Orden</th>
+                            <th class="px-6 py-4 font-semibold">Tipo</th>
+                            <th class="px-6 py-4 font-semibold">Monto</th>
+                            <th class="px-6 py-4 font-semibold">Método</th>
+                            <th class="px-6 py-4 font-semibold">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 font-medium text-gray-800">TK-1042</td>
+                            <td class="px-6 py-4 text-gray-600">Para llevar</td>
+                            <td class="px-6 py-4 font-bold text-gray-800">Q. 85.00</td>
+                            <td class="px-6 py-4 text-gray-600">
+                                <span class="flex items-center gap-2"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg> Tarjeta</span>
+                            </td>
+                            <td class="px-6 py-4"><span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-semibold">Pagado</span></td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 font-medium text-gray-800">TK-1041</td>
+                            <td class="px-6 py-4 text-gray-600">Mesa 4</td>
+                            <td class="px-6 py-4 font-bold text-gray-800">Q. 120.00</td>
+                            <td class="px-6 py-4 text-gray-600">
+                                <span class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg> Efectivo</span>
+                            </td>
+                            <td class="px-6 py-4"><span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-semibold">Pagado</span></td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 font-medium text-gray-800">TK-1040</td>
+                            <td class="px-6 py-4 text-gray-600">Mesa 1</td>
+                            <td class="px-6 py-4 font-bold text-gray-800">Q. 45.00</td>
+                            <td class="px-6 py-4 text-gray-600">
+                                <span class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg> Efectivo</span>
+                            </td>
+                            <td class="px-6 py-4"><span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-semibold">Pendiente</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
 
-    <!-- Modal de Cuenta de Usuario -->
     <div id="modalCuenta" class="fixed inset-0 bg-black/40 z-[60] flex justify-center items-center p-4 hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm">
         <div class="bg-white border border-gray-200 rounded-3xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300" id="modalCuentaContent">
             
@@ -171,7 +261,6 @@
         </div>
     </div>
 
-    <!-- Botón Flotante (FAB) rediseñado -->
     <div class="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-20 flex flex-col items-end">
         <div id="subOpciones" class="hidden flex-col items-end gap-3 mb-4 transition-all origin-bottom">
             <button class="bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-full shadow-lg hover:border-emerald-500 hover:text-emerald-600 transition-all text-sm font-medium flex items-center gap-2">
@@ -188,15 +277,12 @@
 
     <script>
         // --- GESTIÓN DE USUARIO DESDE EL LOGIN ---
-        // Leer el usuario de localStorage (guardado en el Login)
         const usuarioActual = localStorage.getItem('cultura_user') || 'Usuario Demo';
         
-        // Función para inicializar los textos con el nombre del usuario
         function cargarDatosUsuario() {
             document.getElementById('nombreUsuarioMain').textContent = usuarioActual;
             document.getElementById('modalUsername').textContent = usuarioActual;
             
-            // Obtener la inicial para el avatar
             const inicial = usuarioActual.charAt(0).toUpperCase();
             document.getElementById('headerAvatar').textContent = inicial;
             document.getElementById('modalAvatarInitials').textContent = inicial;
@@ -225,7 +311,7 @@
             if (menuOpciones.classList.contains('hidden')) {
                 menuOpciones.classList.remove('hidden');
                 menuOpciones.classList.add('flex');
-                iconPlus.style.transform = 'rotate(45deg)'; // Convierte el + en una X
+                iconPlus.style.transform = 'rotate(45deg)'; 
             } else {
                 menuOpciones.classList.add('hidden');
                 menuOpciones.classList.remove('flex');
@@ -238,11 +324,9 @@
         const modalCuentaContent = document.getElementById('modalCuentaContent');
 
         function abrirCuenta() {
-            // Cerramos el menú lateral por si estaba abierto
             menuLateral.classList.remove('abierto');
             menuOverlay.classList.remove('abierto');
             
-            // Mostramos el modal
             modalCuenta.classList.remove('hidden');
             setTimeout(() => {
                 modalCuenta.classList.remove('opacity-0');
@@ -257,18 +341,17 @@
             modalCuentaContent.classList.add('scale-95');
             setTimeout(() => {
                 modalCuenta.classList.add('hidden');
-            }, 300); // Esperar la animación antes de ocultar
+            }, 300); 
         }
 
         // --- CERRAR SESIÓN ---
         function cerrarSesion() {
             if (confirm('¿Deseas salir del sistema?')) {
-                localStorage.removeItem('cultura_user'); // Borrar los datos del usuario
-                window.location.href = 'login.html';     // Redirigir al login
+                localStorage.removeItem('cultura_user'); 
+                window.location.href = 'login.html';     
             }
         }
 
-        // Iniciar al cargar la página
         window.onload = cargarDatosUsuario;
     </script>
 </body>
