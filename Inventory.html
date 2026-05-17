@@ -1,776 +1,625 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inventario — Cafetería</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Inventario - Cultura Coffee Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+            color: #1f2937;
+            margin: 0;
+            overflow-x: hidden;
+        }
 
-    :root {
-      --bg-primary: #ffffff;
-      --bg-secondary: #f5f4f0;
-      --bg-tertiary: #eeecea;
-      --text-primary: #1a1a18;
-      --text-secondary: #6b6a66;
-      --border-light: rgba(0,0,0,0.1);
-      --border-mid: rgba(0,0,0,0.15);
-      --radius-md: 8px;
-      --radius-lg: 12px;
-      --purple-bg: #EEEDFE;
-      --purple-mid: #534AB7;
-      --purple-dark: #3C3489;
-      --purple-text: #26215C;
-      --teal-bg: #E1F5EE;
-      --teal-dark: #085041;
-      --amber-bg: #FAEEDA;
-      --amber-dark: #633806;
-      --red-bg: #FCEBEB;
-      --red-dark: #791F1F;
-      --blue-bg: #E6F1FB;
-      --blue-dark: #0C447C;
-      --green-bg: #EAF3DE;
-      --green-dark: #27500A;
-    }
+        /* Menú lateral (Off-canvas) */
+        #menuLateral { 
+            position: fixed; 
+            top: 0; 
+            left: -100%;
+            width: 280px; 
+            height: 100vh; 
+            height: 100dvh;
+            background-color: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            transition: left 0.3s ease-in-out; 
+            z-index: 50;
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 4px 0 15px rgba(0,0,0,0.05);
+        }
+        #menuLateral.abierto { left: 0; }
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg-tertiary);
-      color: var(--text-primary);
-      min-height: 100vh;
-      padding: 2rem 1rem;
-    }
+        /* Overlay oscuro */
+        #menuOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 40;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        #menuOverlay.abierto {
+            display: block;
+            opacity: 1;
+        }
 
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-    }
+        /* Ocultar scrollbar en contenedor de filtros horizontal */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
 
-    /* Header */
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-bottom: 1.25rem;
-      border-bottom: 0.5px solid var(--border-light);
-      margin-bottom: 1.5rem;
-    }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .logo-icon {
-      width: 42px; height: 42px;
-      background: var(--purple-dark);
-      border-radius: var(--radius-md);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--purple-bg);
-      font-size: 20px;
-    }
-    .app-title { font-size: 18px; font-weight: 500; color: var(--text-primary); }
-    .app-sub   { font-size: 13px; color: var(--text-secondary); margin-top: 1px; }
-    .date-label { font-size: 12px; color: var(--text-secondary); }
-
-    /* Stats */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 10px;
-      margin-bottom: 1.5rem;
-    }
-    .stat-card {
-      background: var(--bg-primary);
-      border-radius: var(--radius-md);
-      padding: 0.9rem 1rem;
-      border: 0.5px solid var(--border-light);
-    }
-    .stat-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
-    .stat-value { font-size: 24px; font-weight: 500; color: var(--text-primary); }
-    .stat-value.ok     { color: #0F6E56; }
-    .stat-value.warn   { color: #854F0B; }
-    .stat-value.danger { color: #A32D2D; }
-
-    /* Toolbar */
-    .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-    .search-wrap {
-      position: relative;
-      flex: 1;
-      min-width: 180px;
-      max-width: 240px;
-    }
-    .search-wrap i {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 15px;
-      color: var(--text-secondary);
-      pointer-events: none;
-    }
-    .search-wrap input {
-      width: 100%;
-      padding: 7px 10px 7px 32px;
-      border: 0.5px solid var(--border-mid);
-      border-radius: var(--radius-md);
-      font-family: inherit;
-      font-size: 13px;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    .search-wrap input:focus { border-color: var(--purple-mid); }
-
-    .filter-btn {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 6px 12px;
-      background: var(--bg-primary);
-      border: 0.5px solid var(--border-mid);
-      border-radius: var(--radius-md);
-      font-family: inherit;
-      font-size: 13px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all 0.15s;
-      white-space: nowrap;
-    }
-    .filter-btn.active {
-      background: var(--purple-bg);
-      color: var(--purple-dark);
-      border-color: #AFA9EC;
-      font-weight: 500;
-    }
-    .filter-btn:hover:not(.active) { background: var(--bg-secondary); }
-
-    .add-btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 7px 16px;
-      background: var(--purple-dark);
-      border: none;
-      border-radius: var(--radius-md);
-      font-family: inherit;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--purple-bg);
-      cursor: pointer;
-      margin-left: auto;
-      transition: background 0.15s;
-    }
-    .add-btn:hover { background: var(--purple-mid); }
-
-    /* Table */
-    .table-wrap {
-      background: var(--bg-primary);
-      border: 0.5px solid var(--border-light);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      table-layout: fixed;
-    }
-    thead tr { background: var(--bg-secondary); }
-    thead th {
-      padding: 10px 14px;
-      text-align: left;
-      font-weight: 500;
-      font-size: 11px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--text-secondary);
-      border-bottom: 0.5px solid var(--border-light);
-    }
-    tbody tr {
-      border-bottom: 0.5px solid var(--border-light);
-      transition: background 0.1s;
-    }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: var(--bg-secondary); }
-    tbody td { padding: 11px 14px; vertical-align: middle; color: var(--text-primary); }
-
-    .col-prod  { width: 22%; }
-    .col-cat   { width: 15%; }
-    .col-stock { width: 22%; }
-    .col-unit  { width: 9%;  }
-    .col-min   { width: 9%;  }
-    .col-estado{ width: 13%; }
-    .col-acc   { width: 10%; text-align: center; }
-
-    /* Badges */
-    .badge {
-      display: inline-flex; align-items: center;
-      padding: 3px 9px;
-      border-radius: 99px;
-      font-size: 11px;
-      font-weight: 500;
-    }
-    .badge-ok   { background: var(--teal-bg);  color: var(--teal-dark); }
-    .badge-low  { background: var(--amber-bg); color: var(--amber-dark); }
-    .badge-out  { background: var(--red-bg);   color: var(--red-dark); }
-
-    .cat-pill {
-      display: inline-flex; align-items: center;
-      padding: 2px 8px;
-      border-radius: 99px;
-      font-size: 11px;
-      font-weight: 500;
-    }
-    .cat-bebidas   { background: var(--blue-bg);   color: var(--blue-dark); }
-    .cat-alimentos { background: var(--green-bg);  color: var(--green-dark); }
-    .cat-insumos   { background: var(--amber-bg);  color: var(--amber-dark); }
-    .cat-limpieza  { background: var(--red-bg);    color: var(--red-dark); }
-    .cat-equipos   { background: var(--purple-bg); color: var(--purple-dark); }
-
-    /* Stock bar */
-    .stock-bar-wrap { display: flex; align-items: center; gap: 8px; }
-    .stock-bar-bg {
-      flex: 1; height: 5px;
-      background: var(--bg-tertiary);
-      border-radius: 99px;
-      overflow: hidden;
-    }
-    .stock-bar-fill { height: 100%; border-radius: 99px; transition: width 0.3s; }
-    .fill-ok  { background: #1D9E75; }
-    .fill-low { background: #EF9F27; }
-    .fill-out { background: #E24B4A; }
-    .stock-num { font-size: 12px; color: var(--text-secondary); min-width: 28px; text-align: right; }
-
-    /* Action buttons */
-    .action-btn {
-      background: transparent;
-      border: 0.5px solid transparent;
-      cursor: pointer;
-      color: var(--text-secondary);
-      padding: 5px 7px;
-      border-radius: var(--radius-md);
-      font-size: 15px;
-      transition: all 0.12s;
-    }
-    .action-btn:hover {
-      color: var(--text-primary);
-      background: var(--bg-secondary);
-      border-color: var(--border-light);
-    }
-    .action-btn.danger:hover { color: var(--red-dark); background: var(--red-bg); }
-
-    .empty-row td {
-      text-align: center;
-      padding: 2.5rem;
-      color: var(--text-secondary);
-      font-size: 13px;
-    }
-
-    /* ── MOBILE CARDS (ocultas en desktop) ── */
-    .mobile-list { display: none; flex-direction: column; gap: 10px; }
-    .mobile-card {
-      background: var(--bg-primary);
-      border: 0.5px solid var(--border-light);
-      border-radius: var(--radius-lg);
-      padding: 1rem;
-    }
-    .mobile-card-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      gap: 8px;
-    }
-    .mobile-card-name { font-size: 15px; font-weight: 500; flex: 1; }
-    .mobile-card-meta {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
-    .mobile-card-stock {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .mobile-card-stock .stock-bar-bg { flex: 1; }
-    .mobile-card-nums {
-      display: flex;
-      gap: 16px;
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-    .mobile-card-nums span strong {
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-    .mobile-card-actions {
-      display: flex;
-      gap: 8px;
-      border-top: 0.5px solid var(--border-light);
-      padding-top: 10px;
-      margin-top: 2px;
-    }
-    .mobile-action-btn {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 7px;
-      border-radius: var(--radius-md);
-      border: 0.5px solid var(--border-mid);
-      background: transparent;
-      font-family: inherit;
-      font-size: 13px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all 0.12s;
-    }
-    .mobile-action-btn:hover { background: var(--bg-secondary); }
-    .mobile-action-btn.danger { color: var(--red-dark); border-color: #F0959580; }
-    .mobile-action-btn.danger:hover { background: var(--red-bg); }
-
-    /* ── RESPONSIVE BREAKPOINTS ── */
-    @media (max-width: 700px) {
-      body { padding: 1rem 0.75rem; }
-      .app-title { font-size: 16px; }
-      .date-label { display: none; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-      .stat-value { font-size: 20px; }
-      .toolbar { gap: 6px; }
-      .search-wrap { max-width: 100%; min-width: 0; flex: 1 1 100%; order: -1; }
-      .filters-row { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; width: 100%; padding-bottom: 2px; }
-      .filters-row::-webkit-scrollbar { display: none; }
-      .add-btn { width: 100%; justify-content: center; margin-left: 0; }
-      /* tabla → ocultar, mostrar cards */
-      .table-wrap { display: none; }
-      .mobile-list { display: flex; }
-    }
-
-    @media (max-width: 400px) {
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .modal { margin: 0.5rem; }
-      .form-row { grid-template-columns: 1fr; }
-    }
-
-    /* Modal */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.35);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--bg-primary);
-      border-radius: var(--radius-lg);
-      border: 0.5px solid var(--border-light);
-      padding: 1.5rem;
-      width: 100%;
-      max-width: 420px;
-      margin: 1rem;
-    }
-    .modal-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 1.25rem;
-    }
-    .modal-title { font-size: 16px; font-weight: 500; }
-    .modal-close {
-      background: none; border: none; cursor: pointer;
-      color: var(--text-secondary); font-size: 18px; padding: 4px;
-      border-radius: var(--radius-md);
-    }
-    .modal-close:hover { background: var(--bg-secondary); }
-    .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 5px; }
-    .form-group input, .form-group select {
-      width: 100%;
-      padding: 8px 10px;
-      border: 0.5px solid var(--border-mid);
-      border-radius: var(--radius-md);
-      font-family: inherit;
-      font-size: 13px;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      outline: none;
-    }
-    .form-group input:focus, .form-group select:focus { border-color: var(--purple-mid); }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
-    .btn-cancel {
-      padding: 7px 14px;
-      background: transparent;
-      border: 0.5px solid var(--border-mid);
-      border-radius: var(--radius-md);
-      font-family: inherit;
-      font-size: 13px;
-      cursor: pointer;
-      color: var(--text-secondary);
-    }
-    .btn-cancel:hover { background: var(--bg-secondary); }
-    .btn-save {
-      padding: 7px 18px;
-      background: var(--purple-dark);
-      border: none;
-      border-radius: var(--radius-md);
-      font-family: inherit;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--purple-bg);
-      cursor: pointer;
-    }
-    .btn-save:hover { background: var(--purple-mid); }
-
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      background: var(--text-primary);
-      color: var(--bg-primary);
-      padding: 10px 16px;
-      border-radius: var(--radius-md);
-      font-size: 13px;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: all 0.2s;
-      z-index: 200;
-      pointer-events: none;
-    }
-    .toast.show { opacity: 1; transform: translateY(0); }
-  </style>
+        ::-webkit-scrollbar { width: 6px; height: 6px;}
+        ::-webkit-scrollbar-track { background: #f9fafb; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10B981; }
+    </style>
 </head>
-<body>
+<body class="antialiased">
 
-<div class="container">
-
-  <!-- Header -->
-  <div class="header">
-    <div class="header-left">
-      <div class="logo-icon"><i class="ti ti-coffee" aria-hidden="true"></i></div>
-      <div>
-        <div class="app-title">Inventario — Cafetería</div>
-        <div class="app-sub">Control de stock en tiempo real</div>
-      </div>
-    </div>
-    <div class="date-label" id="date-label"></div>
-  </div>
-
-  <!-- Stats -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-label">Total productos</div>
-      <div class="stat-value" id="total-count">—</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Stock normal</div>
-      <div class="stat-value ok" id="ok-count">—</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Stock bajo</div>
-      <div class="stat-value warn" id="low-count">—</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Agotados</div>
-      <div class="stat-value danger" id="out-count">—</div>
-    </div>
-  </div>
-
-  <!-- Toolbar -->
-  <div class="toolbar">
-    <div class="search-wrap">
-      <i class="ti ti-search" aria-hidden="true"></i>
-      <input type="text" id="search-input" placeholder="Buscar producto…" oninput="renderTable()" />
-    </div>
-    <div class="filters-row">
-      <button class="filter-btn active" data-cat="Todos"     onclick="setFilter(this)">Todos</button>
-      <button class="filter-btn"        data-cat="Bebidas"   onclick="setFilter(this)"><i class="ti ti-droplet" aria-hidden="true"></i> Bebidas</button>
-      <button class="filter-btn"        data-cat="Alimentos" onclick="setFilter(this)"><i class="ti ti-bread" aria-hidden="true"></i> Alimentos</button>
-      <button class="filter-btn"        data-cat="Insumos"   onclick="setFilter(this)"><i class="ti ti-box" aria-hidden="true"></i> Insumos</button>
-      <button class="filter-btn"        data-cat="Limpieza"  onclick="setFilter(this)"><i class="ti ti-sparkles" aria-hidden="true"></i> Limpieza</button>
-    </div>
-    <button class="add-btn" onclick="openModal()"><i class="ti ti-plus" aria-hidden="true"></i> Agregar producto</button>
-  </div>
-
-  <!-- Table -->
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th class="col-prod">Producto</th>
-          <th class="col-cat">Categoría</th>
-          <th class="col-stock">Stock actual</th>
-          <th class="col-unit">Unidad</th>
-          <th class="col-min">Mín.</th>
-          <th class="col-estado">Estado</th>
-          <th class="col-acc">Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="table-body"></tbody>
-    </table>
-  </div>
-
-  <!-- Vista móvil: cards -->
-  <div class="mobile-list" id="mobile-list"></div>
-
-</div>
-
-<!-- Modal agregar/editar -->
-<div class="modal-overlay" id="modal-overlay" onclick="handleOverlayClick(event)">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="modal-title">Agregar producto</div>
-      <button class="modal-close" onclick="closeModal()"><i class="ti ti-x" aria-hidden="true"></i></button>
-    </div>
-    <div class="form-group">
-      <label>Nombre del producto</label>
-      <input type="text" id="f-nombre" placeholder="Ej. Leche deslactosada" />
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Categoría</label>
-        <select id="f-cat">
-          <option>Bebidas</option>
-          <option>Alimentos</option>
-          <option>Insumos</option>
-          <option>Limpieza</option>
-          <option>Equipos</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Unidad</label>
-        <input type="text" id="f-unit" placeholder="kg, L, pzas…" />
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Stock actual</label>
-        <input type="number" id="f-stock" placeholder="0" min="0" />
-      </div>
-      <div class="form-group">
-        <label>Stock mínimo</label>
-        <input type="number" id="f-min" placeholder="0" min="0" />
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-      <button class="btn-save"   onclick="saveItem()">Guardar</button>
-    </div>
-  </div>
-</div>
-
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<script>
-  let items = [
-    { nombre: "Café en grano",       cat: "Bebidas",    stock: 12, min: 5,   unit: "kg" },
-    { nombre: "Leche entera",        cat: "Bebidas",    stock: 3,  min: 8,   unit: "L" },
-    { nombre: "Chocolate en polvo",  cat: "Bebidas",    stock: 7,  min: 3,   unit: "kg" },
-    { nombre: "Jarabe de vainilla",  cat: "Bebidas",    stock: 2,  min: 3,   unit: "btl" },
-    { nombre: "Azúcar blanca",       cat: "Alimentos",  stock: 18, min: 5,   unit: "kg" },
-    { nombre: "Pan dulce",           cat: "Alimentos",  stock: 0,  min: 20,  unit: "pzas" },
-    { nombre: "Croissants",          cat: "Alimentos",  stock: 6,  min: 10,  unit: "pzas" },
-    { nombre: "Mermelada fresa",     cat: "Alimentos",  stock: 4,  min: 3,   unit: "frsc" },
-    { nombre: "Vasos desechables",   cat: "Insumos",    stock: 200,min: 50,  unit: "pzas" },
-    { nombre: "Tapas para vaso",     cat: "Insumos",    stock: 40, min: 50,  unit: "pzas" },
-    { nombre: "Servilletas",         cat: "Insumos",    stock: 500,min: 100, unit: "pzas" },
-    { nombre: "Filtros de café",     cat: "Insumos",    stock: 0,  min: 30,  unit: "pzas" },
-    { nombre: "Detergente loza",     cat: "Limpieza",   stock: 2,  min: 2,   unit: "L" },
-    { nombre: "Desinfectante",       cat: "Limpieza",   stock: 1,  min: 2,   unit: "L" },
-    { nombre: "Papel higiénico",     cat: "Limpieza",   stock: 24, min: 6,   unit: "rollos" },
-  ];
-
-  let activeFilter = "Todos";
-  let editIndex = -1;
-
-  const catClass = {
-    Bebidas: "cat-bebidas", Alimentos: "cat-alimentos",
-    Insumos: "cat-insumos", Limpieza:  "cat-limpieza", Equipos: "cat-equipos"
-  };
-  const statusLabel = { ok: "Normal", low: "Stock bajo", out: "Agotado" };
-  const badgeClass  = { ok: "badge-ok", low: "badge-low", out: "badge-out" };
-  const fillClass   = { ok: "fill-ok",  low: "fill-low",  out: "fill-out" };
-
-  function getStatus(item) {
-    if (item.stock === 0)          return "out";
-    if (item.stock < item.min)     return "low";
-    return "ok";
-  }
-
-  function getPct(item) {
-    const max = Math.max(item.min * 2, item.stock, 1);
-    return Math.min(100, Math.round((item.stock / max) * 100));
-  }
-
-  function setFilter(btn) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    activeFilter = btn.dataset.cat;
-    renderTable();
-  }
-
-  function renderTable() {
-    const q = document.getElementById('search-input').value.toLowerCase();
-    const filtered = items
-      .map((item, idx) => ({ item, idx }))
-      .filter(({ item }) => {
-        const matchCat = activeFilter === "Todos" || item.cat === activeFilter;
-        const matchQ   = item.nombre.toLowerCase().includes(q);
-        return matchCat && matchQ;
-      });
-
-    const tbody = document.getElementById('table-body');
-    const mlist = document.getElementById('mobile-list');
-
-    if (filtered.length === 0) {
-      tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No se encontraron productos.</td></tr>';
-      mlist.innerHTML = '<p style="text-align:center;color:var(--text-secondary);font-size:13px;padding:2rem 0;">No se encontraron productos.</p>';
-    } else {
-      // Tabla desktop
-      tbody.innerHTML = filtered.map(({ item, idx }) => {
-        const st  = getStatus(item);
-        const pct = getPct(item);
-        return `<tr>
-          <td class="col-prod" style="font-weight:500;">${item.nombre}</td>
-          <td class="col-cat"><span class="cat-pill ${catClass[item.cat]}">${item.cat}</span></td>
-          <td class="col-stock">
-            <div class="stock-bar-wrap">
-              <div class="stock-bar-bg"><div class="stock-bar-fill ${fillClass[st]}" style="width:${pct}%"></div></div>
-              <span class="stock-num">${item.stock}</span>
+    <header class="bg-white border-b border-gray-200 p-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+        <div class="flex items-center gap-3">
+            <button id="btnMenu" class="text-gray-500 hover:text-emerald-600 focus:outline-none transition-colors p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+            <div class="flex items-center gap-2">
+                <img 
+                    src="nexora.jpg" 
+                    alt="Nexora Logo" 
+                    class="w-8 h-8 sm:w-9 sm:h-9 object-cover rounded-lg border border-gray-200 shadow-sm"
+                    onerror="this.onerror=null; this.src='https://placehold.co/100x100/10B981/ffffff?text=NX';"
+                />
+                <h2 class="text-lg font-bold tracking-wider text-gray-800">Nexora <span class="text-emerald-600 font-medium text-sm hidden sm:inline"> - Cultura Coffee Shop</span></h2>
             </div>
-          </td>
-          <td class="col-unit" style="color:var(--text-secondary);">${item.unit}</td>
-          <td class="col-min"  style="color:var(--text-secondary);">${item.min}</td>
-          <td class="col-estado"><span class="badge ${badgeClass[st]}">${statusLabel[st]}</span></td>
-          <td class="col-acc" style="text-align:center; display:flex; gap:4px; justify-content:center;">
-            <button class="action-btn" title="Editar" onclick="openEdit(${idx})"><i class="ti ti-edit" aria-hidden="true"></i></button>
-            <button class="action-btn danger" title="Eliminar" onclick="deleteItem(${idx})"><i class="ti ti-trash" aria-hidden="true"></i></button>
-          </td>
-        </tr>`;
-      }).join('');
+        </div>
+        
+        <button onclick="abrirCuenta()" class="w-9 h-9 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 font-bold hover:bg-emerald-600 hover:text-white transition-colors shadow-sm">
+            <span id="headerAvatar">U</span>
+        </button>
+    </header>
 
-      // Cards móvil
-      mlist.innerHTML = filtered.map(({ item, idx }) => {
-        const st  = getStatus(item);
-        const pct = getPct(item);
-        return `<div class="mobile-card">
-          <div class="mobile-card-top">
-            <div class="mobile-card-name">${item.nombre}</div>
-            <span class="badge ${badgeClass[st]}">${statusLabel[st]}</span>
-          </div>
-          <div class="mobile-card-meta">
-            <span class="cat-pill ${catClass[item.cat]}">${item.cat}</span>
-          </div>
-          <div class="mobile-card-stock">
-            <div class="stock-bar-bg" style="flex:1;height:5px;border-radius:99px;background:var(--bg-tertiary);overflow:hidden;">
-              <div class="stock-bar-fill ${fillClass[st]}" style="width:${pct}%;height:100%;border-radius:99px;"></div>
+    <div id="menuOverlay"></div>
+
+    <div id="menuLateral">
+        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+            <div class="flex flex-col">
+                <span class="text-xs text-gray-500 font-semibold tracking-widest uppercase">Menú Principal</span>
             </div>
-            <span class="stock-num">${item.stock} ${item.unit}</span>
-          </div>
-          <div class="mobile-card-nums">
-            <span>Stock actual: <strong>${item.stock} ${item.unit}</strong></span>
-            <span>Mínimo: <strong>${item.min} ${item.unit}</strong></span>
-          </div>
-          <div class="mobile-card-actions">
-            <button class="mobile-action-btn" onclick="openEdit(${idx})"><i class="ti ti-edit" aria-hidden="true"></i> Editar</button>
-            <button class="mobile-action-btn danger" onclick="deleteItem(${idx})"><i class="ti ti-trash" aria-hidden="true"></i> Eliminar</button>
-          </div>
-        </div>`;
-      }).join('');
-    }
+            <button id="btnCerrarMenu" class="text-gray-400 hover:text-gray-800 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
 
-    document.getElementById('total-count').textContent = items.length;
-    document.getElementById('ok-count').textContent    = items.filter(i => getStatus(i) === 'ok').length;
-    document.getElementById('low-count').textContent   = items.filter(i => getStatus(i) === 'low').length;
-    document.getElementById('out-count').textContent   = items.filter(i => getStatus(i) === 'out').length;
-  }
+        <div class="flex-1 p-4 overflow-y-auto space-y-2">
+            <a href="Inventory.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-emerald-50 text-emerald-700 transition-all font-medium border border-emerald-100">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>
+                Inventario
+            </a>
+            <a href="Pnt_venta.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg>
+                Punto de Venta
+            </a>
+            <a href="pedido.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 15.75h3.75M18 1.5v21m-12-21v21m12-21H6m12 0a2.25 2.25 0 002.25 2.25V19.5A2.25 2.25 0 0118 21.75H6a2.25 2.25 0 01-2.25-2.25V3.75A2.25 2.25 0 016 1.5h12z" /></svg>
+                Toma de Pedidos
+            </a>
+            <a href="dashboard_demo_cultura_coffee_shop.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
+                Dashboard Principal
+            </a>
+        </div>
 
-  function openModal(title = "Agregar producto") {
-    editIndex = -1;
-    document.getElementById('modal-title').textContent = title;
-    document.getElementById('f-nombre').value = '';
-    document.getElementById('f-cat').value    = 'Bebidas';
-    document.getElementById('f-unit').value   = '';
-    document.getElementById('f-stock').value  = '';
-    document.getElementById('f-min').value    = '';
-    document.getElementById('modal-overlay').classList.add('open');
-    setTimeout(() => document.getElementById('f-nombre').focus(), 50);
-  }
+        <div class="p-4 border-t border-gray-100 space-y-2 bg-gray-50/50">
+            <button onclick="abrirCuenta()" class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 bg-white hover:bg-emerald-50 hover:text-emerald-700 border border-gray-200 shadow-sm transition-all">
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                    <span class="font-medium text-sm">Mi Cuenta</span>
+                </div>
+            </button>
+            <button onclick="cerrarSesion()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" /></svg>
+                Salir del Sistema
+            </button>
+        </div>
+    </div>
 
-  function openEdit(idx) {
-    editIndex = idx;
-    const item = items[idx];
-    document.getElementById('modal-title').textContent = "Editar producto";
-    document.getElementById('f-nombre').value = item.nombre;
-    document.getElementById('f-cat').value    = item.cat;
-    document.getElementById('f-unit').value   = item.unit;
-    document.getElementById('f-stock').value  = item.stock;
-    document.getElementById('f-min').value    = item.min;
-    document.getElementById('modal-overlay').classList.add('open');
-    setTimeout(() => document.getElementById('f-nombre').focus(), 50);
-  }
+    <main class="p-6 sm:p-8 max-w-6xl mx-auto space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-gray-200 pb-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-1 flex items-center gap-2">
+                    <i class="ti ti-coffee text-emerald-600 text-3xl"></i> Inventario
+                </h1>
+                <p class="text-sm text-gray-500">Control de stock en tiempo real</p>
+            </div>
+            <div class="text-sm font-medium text-gray-500 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm" id="date-label"></div>
+        </div>
 
-  function closeModal() {
-    document.getElementById('modal-overlay').classList.remove('open');
-  }
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:border-emerald-200 transition-colors">
+                <div class="text-gray-500 text-sm font-semibold mb-2">Total productos</div>
+                <div class="text-3xl font-bold text-gray-800 tracking-tight" id="total-count">—</div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:border-emerald-200 transition-colors">
+                <div class="text-gray-500 text-sm font-semibold mb-2">Stock normal</div>
+                <div class="text-3xl font-bold text-emerald-600 tracking-tight" id="ok-count">—</div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:border-amber-200 transition-colors">
+                <div class="text-gray-500 text-sm font-semibold mb-2">Stock bajo</div>
+                <div class="text-3xl font-bold text-amber-600 tracking-tight" id="low-count">—</div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-red-100 shadow-sm bg-red-50">
+                <div class="text-red-600 text-sm font-semibold mb-2">Agotados</div>
+                <div class="text-3xl font-bold text-red-700 tracking-tight" id="out-count">—</div>
+            </div>
+        </div>
 
-  function handleOverlayClick(e) {
-    if (e.target === document.getElementById('modal-overlay')) closeModal();
-  }
+        <div class="flex flex-col lg:flex-row gap-4 justify-between bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+            
+            <div class="relative w-full lg:w-64">
+                <i class="ti ti-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="search-input" placeholder="Buscar producto…" oninput="renderTable()" 
+                    class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" />
+            </div>
 
-  function saveItem() {
-    const nombre = document.getElementById('f-nombre').value.trim();
-    const cat    = document.getElementById('f-cat').value;
-    const unit   = document.getElementById('f-unit').value.trim();
-    const stock  = parseInt(document.getElementById('f-stock').value) || 0;
-    const min    = parseInt(document.getElementById('f-min').value)   || 0;
+            <div class="flex gap-2 overflow-x-auto hide-scrollbar w-full lg:w-auto pb-1 lg:pb-0" id="filters-container">
+                <button class="filter-btn bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold px-4 py-2 border rounded-xl text-sm whitespace-nowrap transition-all" data-cat="Todos" onclick="setFilter(this, 'Todos')">Todos</button>
+                <button class="filter-btn bg-white text-gray-600 border-gray-200 hover:bg-gray-50 px-4 py-2 border rounded-xl text-sm whitespace-nowrap transition-all flex items-center gap-1.5" data-cat="Bebidas" onclick="setFilter(this, 'Bebidas')"><i class="ti ti-droplet"></i> Bebidas</button>
+                <button class="filter-btn bg-white text-gray-600 border-gray-200 hover:bg-gray-50 px-4 py-2 border rounded-xl text-sm whitespace-nowrap transition-all flex items-center gap-1.5" data-cat="Alimentos" onclick="setFilter(this, 'Alimentos')"><i class="ti ti-bread"></i> Alimentos</button>
+                <button class="filter-btn bg-white text-gray-600 border-gray-200 hover:bg-gray-50 px-4 py-2 border rounded-xl text-sm whitespace-nowrap transition-all flex items-center gap-1.5" data-cat="Insumos" onclick="setFilter(this, 'Insumos')"><i class="ti ti-box"></i> Insumos</button>
+                <button class="filter-btn bg-white text-gray-600 border-gray-200 hover:bg-gray-50 px-4 py-2 border rounded-xl text-sm whitespace-nowrap transition-all flex items-center gap-1.5" data-cat="Limpieza" onclick="setFilter(this, 'Limpieza')"><i class="ti ti-sparkles"></i> Limpieza</button>
+            </div>
 
-    if (!nombre || !unit) {
-      showToast("Completa el nombre y la unidad.");
-      return;
-    }
+            <button onclick="openModal()" class="w-full lg:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm flex items-center justify-center gap-2">
+                <i class="ti ti-plus text-lg"></i> Agregar producto
+            </button>
+        </div>
 
-    if (editIndex >= 0) {
-      items[editIndex] = { nombre, cat, stock, min, unit };
-      showToast("Producto actualizado.");
-    } else {
-      items.push({ nombre, cat, stock, min, unit });
-      showToast("Producto agregado.");
-    }
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hidden md:block">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-gray-500 uppercase bg-gray-50/80 border-b border-gray-200">
+                        <tr>
+                            <th class="px-6 py-4 font-semibold">Producto</th>
+                            <th class="px-6 py-4 font-semibold">Categoría</th>
+                            <th class="px-6 py-4 font-semibold w-1/4">Stock actual</th>
+                            <th class="px-6 py-4 font-semibold">Unidad</th>
+                            <th class="px-6 py-4 font-semibold">Mín.</th>
+                            <th class="px-6 py-4 font-semibold">Estado</th>
+                            <th class="px-6 py-4 font-semibold text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="divide-y divide-gray-100">
+                        </tbody>
+                </table>
+            </div>
+        </div>
 
-    closeModal();
-    renderTable();
-  }
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:hidden" id="mobile-list">
+            </div>
 
-  function deleteItem(idx) {
-    if (!confirm(`¿Eliminar "${items[idx].nombre}"?`)) return;
-    items.splice(idx, 1);
-    renderTable();
-    showToast("Producto eliminado.");
-  }
+    </main>
 
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
-  }
+    <div id="modalCuenta" class="fixed inset-0 bg-black/40 z-[60] flex justify-center items-center p-4 hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm">
+        <div class="bg-white border border-gray-200 rounded-3xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300" id="modalCuentaContent">
+            
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-lg font-bold text-gray-800">Perfil de Usuario</h3>
+                <button onclick="cerrarCuenta()" class="text-gray-400 hover:text-gray-800 p-1 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
 
-  // Date
-  document.getElementById('date-label').textContent =
-    new Date().toLocaleDateString('es-GT', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+            <div class="flex flex-col items-center py-6 border-y border-gray-100 mb-6">
+                <div class="w-20 h-20 rounded-full bg-emerald-50 border-2 border-emerald-500 flex items-center justify-center text-emerald-600 text-3xl font-bold mb-3 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+                    <span id="modalAvatarInitials">U</span>
+                </div>
+                <h4 class="text-xl font-bold text-gray-800" id="modalUsername">Cargando...</h4>
+                <p class="text-emerald-600 text-sm font-medium mt-1">Acceso Autorizado</p>
+                <span class="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full mt-3 font-medium border border-gray-200">Miembro Activo</span>
+            </div>
 
-  renderTable();
-</script>
+            <button onclick="cerrarSesion()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3 px-4 rounded-xl transition-colors border border-red-200 flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" /></svg>
+                Cerrar Sesión
+            </button>
+        </div>
+    </div>
+
+    <div id="modal-overlay" class="fixed inset-0 bg-black/40 z-[60] flex justify-center items-center p-4 hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm" onclick="handleOverlayClick(event)">
+        <div class="bg-white border border-gray-200 rounded-3xl p-6 w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300" id="modal-content">
+            
+            <div class="flex justify-between items-center mb-5 border-b border-gray-100 pb-4">
+                <h3 class="text-xl font-bold text-gray-800" id="modal-title">Agregar producto</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-800 p-1 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del producto</label>
+                    <input type="text" id="f-nombre" placeholder="Ej. Leche deslactosada" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" />
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+                        <select id="f-cat" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all bg-white">
+                            <option>Bebidas</option>
+                            <option>Alimentos</option>
+                            <option>Insumos</option>
+                            <option>Limpieza</option>
+                            <option>Equipos</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Unidad</label>
+                        <input type="text" id="f-unit" placeholder="kg, L, pzas…" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Stock actual</label>
+                        <input type="number" id="f-stock" placeholder="0" min="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Stock mínimo</label>
+                        <input type="number" id="f-min" placeholder="0" min="0" class="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-3 justify-end mt-8 border-t border-gray-100 pt-5">
+                <button onclick="closeModal()" class="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-50 transition-colors">Cancelar</button>
+                <button onclick="saveItem()" class="px-5 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 shadow-sm transition-colors">Guardar Producto</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-5 right-5 bg-gray-800 text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium transform translate-y-10 opacity-0 transition-all duration-300 z-[70] pointer-events-none flex items-center gap-2">
+        <i class="ti ti-check text-emerald-400 text-lg"></i> <span id="toast-msg"></span>
+    </div>
+
+    <script>
+        // --- LÓGICA DEL MENÚ LATERAL Y USUARIO ---
+        const usuarioActual = localStorage.getItem('cultura_user') || 'Usuario Demo';
+        
+        function cargarDatosUsuario() {
+            document.getElementById('modalUsername').textContent = usuarioActual;
+            const inicial = usuarioActual.charAt(0).toUpperCase();
+            document.getElementById('headerAvatar').textContent = inicial;
+            document.getElementById('modalAvatarInitials').textContent = inicial;
+
+            // Fecha formateada
+            document.getElementById('date-label').textContent = new Date().toLocaleDateString('es-GT', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+        }
+
+        const menuLateral = document.getElementById('menuLateral');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const btnMenu = document.getElementById('btnMenu');
+        const btnCerrarMenu = document.getElementById('btnCerrarMenu');
+
+        function toggleMenu() {
+            menuLateral.classList.toggle('abierto');
+            menuOverlay.classList.toggle('abierto');
+        }
+
+        btnMenu.addEventListener('click', toggleMenu);
+        btnCerrarMenu.addEventListener('click', toggleMenu);
+        menuOverlay.addEventListener('click', toggleMenu);
+
+        const modalCuenta = document.getElementById('modalCuenta');
+        const modalCuentaContent = document.getElementById('modalCuentaContent');
+
+        function abrirCuenta() {
+            menuLateral.classList.remove('abierto');
+            menuOverlay.classList.remove('abierto');
+            
+            modalCuenta.classList.remove('hidden');
+            setTimeout(() => {
+                modalCuenta.classList.remove('opacity-0');
+                modalCuentaContent.classList.remove('scale-95');
+                modalCuentaContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function cerrarCuenta() {
+            modalCuenta.classList.add('opacity-0');
+            modalCuentaContent.classList.remove('scale-100');
+            modalCuentaContent.classList.add('scale-95');
+            setTimeout(() => {
+                modalCuenta.classList.add('hidden');
+            }, 300); 
+        }
+
+        function cerrarSesion() {
+            if (confirm('¿Deseas salir del sistema?')) {
+                localStorage.removeItem('cultura_user'); 
+                window.location.href = 'login.html';     
+            }
+        }
+
+        // --- LÓGICA DEL INVENTARIO ---
+        let items = [
+            { nombre: "Café en grano",       cat: "Bebidas",    stock: 12, min: 5,   unit: "kg" },
+            { nombre: "Leche entera",        cat: "Bebidas",    stock: 3,  min: 8,   unit: "L" },
+            { nombre: "Chocolate en polvo",  cat: "Bebidas",    stock: 7,  min: 3,   unit: "kg" },
+            { nombre: "Jarabe de vainilla",  cat: "Bebidas",    stock: 2,  min: 3,   unit: "btl" },
+            { nombre: "Azúcar blanca",       cat: "Alimentos",  stock: 18, min: 5,   unit: "kg" },
+            { nombre: "Pan dulce",           cat: "Alimentos",  stock: 0,  min: 20,  unit: "pzas" },
+            { nombre: "Croissants",          cat: "Alimentos",  stock: 6,  min: 10,  unit: "pzas" },
+            { nombre: "Mermelada fresa",     cat: "Alimentos",  stock: 4,  min: 3,   unit: "frsc" },
+            { nombre: "Vasos desechables",   cat: "Insumos",    stock: 200,min: 50,  unit: "pzas" },
+            { nombre: "Tapas para vaso",     cat: "Insumos",    stock: 40, min: 50,  unit: "pzas" },
+            { nombre: "Servilletas",         cat: "Insumos",    stock: 500,min: 100, unit: "pzas" },
+            { nombre: "Filtros de café",     cat: "Insumos",    stock: 0,  min: 30,  unit: "pzas" },
+            { nombre: "Detergente loza",     cat: "Limpieza",   stock: 2,  min: 2,   unit: "L" },
+            { nombre: "Desinfectante",       cat: "Limpieza",   stock: 1,  min: 2,   unit: "L" },
+            { nombre: "Papel higiénico",     cat: "Limpieza",   stock: 24, min: 6,   unit: "rollos" },
+        ];
+
+        let activeFilter = "Todos";
+        let editIndex = -1;
+
+        // Diccionarios de clases Tailwind para estilos dinámicos
+        const catClass = {
+            Bebidas: "bg-blue-50 text-blue-700 border-blue-200", 
+            Alimentos: "bg-orange-50 text-orange-700 border-orange-200",
+            Insumos: "bg-purple-50 text-purple-700 border-purple-200", 
+            Limpieza:  "bg-cyan-50 text-cyan-700 border-cyan-200", 
+            Equipos: "bg-gray-100 text-gray-700 border-gray-300"
+        };
+        const statusLabel = { ok: "Normal", low: "Stock bajo", out: "Agotado" };
+        const badgeClass  = { ok: "bg-emerald-100 text-emerald-700", low: "bg-amber-100 text-amber-700", out: "bg-red-100 text-red-700" };
+        const fillClass   = { ok: "bg-emerald-500",  low: "bg-amber-500",  out: "bg-red-500" };
+
+        function getStatus(item) {
+            if (item.stock === 0) return "out";
+            if (item.stock < item.min) return "low";
+            return "ok";
+        }
+
+        function getPct(item) {
+            const max = Math.max(item.min * 2, item.stock, 1);
+            return Math.min(100, Math.round((item.stock / max) * 100));
+        }
+
+        function setFilter(btn, cat) {
+            // Reiniciar estilos de todos los botones de filtro
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.className = "filter-btn bg-white text-gray-600 border-gray-200 hover:bg-gray-50 px-4 py-2 border rounded-xl text-sm whitespace-nowrap transition-all flex items-center gap-1.5";
+            });
+            // Activar botón clickeado
+            btn.className = "filter-btn bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold px-4 py-2 border rounded-xl text-sm whitespace-nowrap transition-all flex items-center gap-1.5";
+            
+            activeFilter = cat;
+            renderTable();
+        }
+
+        function renderTable() {
+            const q = document.getElementById('search-input').value.toLowerCase();
+            const filtered = items
+                .map((item, idx) => ({ item, idx }))
+                .filter(({ item }) => {
+                    const matchCat = activeFilter === "Todos" || item.cat === activeFilter;
+                    const matchQ   = item.nombre.toLowerCase().includes(q);
+                    return matchCat && matchQ;
+                });
+
+            const tbody = document.getElementById('table-body');
+            const mlist = document.getElementById('mobile-list');
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-10 text-gray-500">No se encontraron productos.</td></tr>';
+                mlist.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500 bg-white rounded-2xl border border-gray-200">No se encontraron productos.</div>';
+            } else {
+                // Render Desktop
+                tbody.innerHTML = filtered.map(({ item, idx }) => {
+                    const st  = getStatus(item);
+                    const pct = getPct(item);
+                    return `<tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 font-medium text-gray-800">${item.nombre}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-1 rounded-md text-xs font-semibold border ${catClass[item.cat]}">${item.cat}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                    <div class="${fillClass[st]} h-1.5 rounded-full" style="width: ${pct}%"></div>
+                                </div>
+                                <span class="text-xs font-semibold text-gray-600 w-8 text-right">${item.stock}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-gray-500 text-xs font-medium uppercase">${item.unit}</td>
+                        <td class="px-6 py-4 text-gray-500 text-sm">${item.min}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold ${badgeClass[st]}">${statusLabel[st]}</span>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <button class="text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 p-1.5 rounded-lg transition-colors" title="Editar" onclick="openEdit(${idx})">
+                                    <i class="ti ti-edit text-lg"></i>
+                                </button>
+                                <button class="text-gray-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-lg transition-colors" title="Eliminar" onclick="deleteItem(${idx})">
+                                    <i class="ti ti-trash text-lg"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+                }).join('');
+
+                // Render Mobile Cards
+                mlist.innerHTML = filtered.map(({ item, idx }) => {
+                    const st  = getStatus(item);
+                    const pct = getPct(item);
+                    return `<div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm relative">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold text-gray-800 text-base pr-20">${item.nombre}</h3>
+                            <span class="absolute top-4 right-4 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${badgeClass[st]}">${statusLabel[st]}</span>
+                        </div>
+                        <div class="mb-4">
+                            <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold border ${catClass[item.cat]}">${item.cat}</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                <div class="${fillClass[st]} h-1.5 rounded-full" style="width: ${pct}%"></div>
+                            </div>
+                            <span class="text-sm font-bold text-gray-800 whitespace-nowrap">${item.stock} <span class="text-xs text-gray-500 font-normal uppercase">${item.unit}</span></span>
+                        </div>
+                        
+                        <div class="text-xs text-gray-500 mb-4">
+                            Mínimo requerido: <strong class="text-gray-700">${item.min} ${item.unit}</strong>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 border-t border-gray-100 pt-3 mt-auto">
+                            <button class="flex items-center justify-center gap-1.5 text-xs font-semibold text-gray-600 border border-gray-200 rounded-lg py-2 hover:bg-gray-50 transition-colors" onclick="openEdit(${idx})">
+                                <i class="ti ti-edit text-sm"></i> Editar
+                            </button>
+                            <button class="flex items-center justify-center gap-1.5 text-xs font-semibold text-red-600 border border-red-100 bg-red-50 rounded-lg py-2 hover:bg-red-100 transition-colors" onclick="deleteItem(${idx})">
+                                <i class="ti ti-trash text-sm"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            // Actualizar contadores
+            document.getElementById('total-count').textContent = items.length;
+            document.getElementById('ok-count').textContent    = items.filter(i => getStatus(i) === 'ok').length;
+            document.getElementById('low-count').textContent   = items.filter(i => getStatus(i) === 'low').length;
+            document.getElementById('out-count').textContent   = items.filter(i => getStatus(i) === 'out').length;
+        }
+
+        // Lógica del Modal del Inventario
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalContent = document.getElementById('modal-content');
+
+        function openModal(title = "Agregar producto") {
+            editIndex = -1;
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('f-nombre').value = '';
+            document.getElementById('f-cat').value    = 'Bebidas';
+            document.getElementById('f-unit').value   = '';
+            document.getElementById('f-stock').value  = '';
+            document.getElementById('f-min').value    = '';
+            
+            modalOverlay.classList.remove('hidden');
+            setTimeout(() => {
+                modalOverlay.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+                document.getElementById('f-nombre').focus();
+            }, 10);
+        }
+
+        function openEdit(idx) {
+            editIndex = idx;
+            const item = items[idx];
+            document.getElementById('modal-title').textContent = "Editar producto";
+            document.getElementById('f-nombre').value = item.nombre;
+            document.getElementById('f-cat').value    = item.cat;
+            document.getElementById('f-unit').value   = item.unit;
+            document.getElementById('f-stock').value  = item.stock;
+            document.getElementById('f-min').value    = item.min;
+            
+            modalOverlay.classList.remove('hidden');
+            setTimeout(() => {
+                modalOverlay.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+                document.getElementById('f-nombre').focus();
+            }, 10);
+        }
+
+        function closeModal() {
+            modalOverlay.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modalOverlay.classList.add('hidden');
+            }, 300);
+        }
+
+        function handleOverlayClick(e) {
+            if (e.target === modalOverlay) closeModal();
+        }
+
+        function saveItem() {
+            const nombre = document.getElementById('f-nombre').value.trim();
+            const cat    = document.getElementById('f-cat').value;
+            const unit   = document.getElementById('f-unit').value.trim();
+            const stock  = parseInt(document.getElementById('f-stock').value) || 0;
+            const min    = parseInt(document.getElementById('f-min').value)   || 0;
+
+            if (!nombre || !unit) {
+                showToast("Por favor, completa el nombre y la unidad.", false);
+                return;
+            }
+
+            if (editIndex >= 0) {
+                items[editIndex] = { nombre, cat, stock, min, unit };
+                showToast("Producto actualizado exitosamente.");
+            } else {
+                items.push({ nombre, cat, stock, min, unit });
+                showToast("Producto agregado exitosamente.");
+            }
+
+            closeModal();
+            renderTable();
+        }
+
+        function deleteItem(idx) {
+            if (!confirm(`¿Estás seguro de eliminar "${items[idx].nombre}"?`)) return;
+            items.splice(idx, 1);
+            renderTable();
+            showToast("Producto eliminado exitosamente.", true, "red");
+        }
+
+        function showToast(msg, isSuccess = true, colorTheme = "emerald") {
+            const t = document.getElementById('toast');
+            const tMsg = document.getElementById('toast-msg');
+            const icon = t.querySelector('i');
+            
+            tMsg.textContent = msg;
+            
+            // Icono dinámico
+            if (isSuccess && colorTheme === "emerald") {
+                icon.className = "ti ti-check text-emerald-400 text-lg";
+            } else if (colorTheme === "red") {
+                icon.className = "ti ti-trash text-red-400 text-lg";
+            } else {
+                icon.className = "ti ti-alert-circle text-amber-400 text-lg";
+            }
+
+            t.classList.remove('translate-y-10', 'opacity-0');
+            
+            setTimeout(() => {
+                t.classList.add('translate-y-10', 'opacity-0');
+            }, 3000);
+        }
+
+        // Inicializar
+        window.onload = () => {
+            cargarDatosUsuario();
+            renderTable();
+        };
+    </script>
 </body>
 </html>
